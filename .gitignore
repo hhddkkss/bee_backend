@@ -1,0 +1,18 @@
+#There are som exples of commonly ignore file patterns
+
+# Node arttifact files
+node_modules/
+dist/
+
+.vscode
+.idea
+node_modules
+modules/db_connect2.js
+
+package-lock.json
+tmp_uploads
+
+upload
+dev.env 
+production.env
+#要設 expressjs service和 db config
