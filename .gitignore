@@ -7,12 +7,14 @@ dist/
 .vscode
 .idea
 node_modules
-modules/db_connect2.js
+# modules/db_connect.js
+
+public/img
 
 package-lock.json
 tmp_uploads
 
 upload
-dev.env 
+# dev.env 
 production.env
 #要設 expressjs service和 db config
