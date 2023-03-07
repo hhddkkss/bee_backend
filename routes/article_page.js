@@ -8,8 +8,8 @@ router.use((req, res, next) => {
   next()
 })
 
-const getMemberData = async (req) => {
-  const perPage = 9
+const getArticlerData = async (req) => {
+  const perPage = 10
   let page = +req.query.page || 1
   page = parseInt(page)
   let redirect = ''
@@ -24,8 +24,8 @@ const getMemberData = async (req) => {
   const totalPages = Math.ceil(totalRows / perPage)
 
   let rows = []
-  const sql = `SELECT * FROM articles LIMIT ${perPage}`
-  ;[rows] = await dataBase.query(sql)
+  const sql = `SELECT * FROM articles WHERE 1`;
+  [rows] = await dataBase.query(sql)
 
   return {
     totalPages,
@@ -37,9 +37,13 @@ const getMemberData = async (req) => {
   }
 }
 
+
+//文章擷取API
 router.get('/article_api', async (req, res) => {
-  res.json(await getMemberData(req))
+  res.json(await getArticlerData(req))
 })
+
+
 
 //記得!!!!----將路由作為模組打包匯出----
 module.exports = router

@@ -22,6 +22,13 @@ const cors = require('cors')
 // aaron database測試用
 const db = require('./modules/mydb-connect')
 
+//密碼加密bcrypt
+const bcrypt = require('bcryptjs');
+//Token
+const jwt = require('jsonwebtoken')
+
+
+
 //2.建立 web server 物件
 const app = express()
 //EJS
@@ -58,6 +65,68 @@ app.get('/try_db2', async (req, res) => {
   )
   res.json(rows)
 })
+
+
+
+//會員登入登出
+app.post('/login' ,async(req, res)=>{
+  let output = {
+    success : false,
+    error:'',
+    postData:req.body,
+    token:'',
+  }
+
+  const sql = "SELECT * FROM `member_list` WHERE `email` = ?";
+  const [rows] = await dataBase.query(sql,[req,body.email]);
+  //帳號錯誤判斷
+   if(!rows.length){
+    output.error='Oh!帳號密碼錯誤!'
+    return res.json(output);
+   }
+
+   //密碼驗證
+   let passwordCorrect = false;
+   try{
+    passwordCorrect = await bcrypt.compare(req.body.password)
+   }catch(ex){}
+
+   if(passwordCorrect){
+        output.success = true;
+      //把登入記錄在SESSION裡
+        req.session.member = {
+          sid:rows[0].sid,
+          account:rows[0].account
+      }
+      //包成token
+      output.token= jwt.sign({
+        sid:rows[0].sid,
+        account:rows[0].account
+            },process.env.JWT_SECRET)
+            output.memberId=rows[0].sid;
+            output.memberAccount=rows[0].account
+
+     }else{
+          output.error="402帳號密碼錯誤"
+          return res.json(output);
+        }
+
+
+
+
+   
+
+} )
+
+
+
+
+
+
+
+
+
+
 
 app.use('/member_page', require('./routes/member_page'))
 app.use('/article_page', require('./routes/article_page'))
