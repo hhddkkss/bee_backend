@@ -138,6 +138,7 @@ app.use('/products', require('./routes/products'))
 app.use('/cart', require('./routes/cart'))
 app.use('/coupon', require('./routes/coupon'))
 app.use('/like_list', require('./routes/like_list'))
+app.use('/signIn', require('./routes/signIn'))
 
 //靜態內容資料夾
 app.use(express.static(__dirname + '/public'))
