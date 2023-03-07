@@ -11,6 +11,7 @@ router.use((req, res, next) => {
 //拿到全部商品
 const getProductsData = async (req, res) => {
   const sql = 'SELECT * FROM `product_total` WHERE 1'
+
   // const sql2 = 'SELECT COUNT(1) totalRows FROM `product_total` WHERE 1'
   try {
     const [rows] = await db.query(sql)

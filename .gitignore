@@ -20,7 +20,4 @@ production.env
 #要設 expressjs service和 db config
 
 
-.eslintignore
-.eslintrc
-.prettierignore
-.prettierrc
+

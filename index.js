@@ -64,6 +64,7 @@ app.use('/article_page', require('./routes/article_page'))
 app.use('/products', require('./routes/products'))
 app.use('/cart', require('./routes/cart'))
 app.use('/coupon', require('./routes/coupon'))
+app.use('/like_list', require('./routes/like_list'))
 
 //靜態內容資料夾
 app.use(express.static(__dirname + '/public'))
