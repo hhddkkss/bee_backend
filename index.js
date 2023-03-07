@@ -21,6 +21,12 @@ const cors = require('cors')
 
 // aaron database測試用
 const db = require('./modules/mydb-connect')
+//session
+const session = require('express-session')
+//mysql session(higher-order function)
+const MysqlStore = require('express-mysql-session')(session);
+//
+const sessionStore = new MysqlStore({},dataBase);
 
 //密碼加密bcrypt
 const bcrypt = require('bcryptjs');
@@ -36,6 +42,16 @@ app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 //設定白名單
 
+//session設定
+app.use(session({
+  saveUninitialized:false,
+  resave:false,
+  secret:'fueihfiwjcf%%xsjw',
+  store: sessionStore,
+  cookie:{
+      maxAge:12000000
+  }
+}));
 //Top-level middleware
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
@@ -69,6 +85,9 @@ app.get('/try_db2', async (req, res) => {
 
 
 //會員登入登出
+app.get('/login',(req,res)=>{
+  res.send('hi!')
+})
 app.post('/login' ,async(req, res)=>{
   let output = {
     success : false,
@@ -78,7 +97,7 @@ app.post('/login' ,async(req, res)=>{
   }
 
   const sql = "SELECT * FROM `member_list` WHERE `email` = ?";
-  const [rows] = await dataBase.query(sql,[req,body.email]);
+  const [rows] = await dataBase.query(sql,[req.body.email]);
   //帳號錯誤判斷
    if(!rows.length){
     output.error='Oh!帳號密碼錯誤!'
@@ -88,24 +107,24 @@ app.post('/login' ,async(req, res)=>{
    //密碼驗證
    let passwordCorrect = false;
    try{
-    passwordCorrect = await bcrypt.compare(req.body.password)
+    passwordCorrect = await bcrypt.compare(req.body.password,rows[0].password)
    }catch(ex){}
 
    if(passwordCorrect){
         output.success = true;
       //把登入記錄在SESSION裡
         req.session.member = {
-          sid:rows[0].sid,
-          account:rows[0].account
+          member_id:rows[0].member_id, 
       }
-      //包成token
+      
+     // 包成token
       output.token= jwt.sign({
-        sid:rows[0].sid,
-        account:rows[0].account
+        member_id:rows[0].member_id,
+        email:rows[0].email
             },process.env.JWT_SECRET)
-            output.memberId=rows[0].sid;
-            output.memberAccount=rows[0].account
-
+            output.memberId=rows[0].member_id;
+            output.memberEmail=rows[0].email
+            res.json(output);
      }else{
           output.error="402帳號密碼錯誤"
           return res.json(output);
