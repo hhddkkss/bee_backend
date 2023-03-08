@@ -119,7 +119,7 @@ app.post('/login', async (req, res) => {
     output.token = jwt.sign(
       {
         member_id: rows[0].member_id,
-        email: rows[0].email,
+        member_email: rows[0].email,
       },
       process.env.JWT_SECRET
     )
