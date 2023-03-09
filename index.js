@@ -106,7 +106,9 @@ app.post('/login', async (req, res) => {
   let passwordCorrect = false
   try {
     passwordCorrect = await bcrypt.compare(req.body.password, rows[0].password)
-  } catch (ex) {}
+  } catch (ex) {
+    console.log(ex)
+  }
 
   if (passwordCorrect) {
     output.success = true

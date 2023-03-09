@@ -8,12 +8,14 @@ router.use((req, res, next) => {
   next()
 })
 
+//獲得收藏清單
 router.get('/', async (req, res) => {
   const [rows] = await db.query('SELECT * FROM `like_list` WHERE 1')
 
   res.json(rows)
 })
 
+//新增收藏
 router.post('/', async (req, res) => {
   //   const { member_id, product_id } = req.body
 
@@ -25,10 +27,14 @@ router.post('/', async (req, res) => {
   res.json([rows])
 })
 
+//刪除收藏
 router.delete('/:sid', async (req, res) => {
   const sid = req.params.sid
+  console.log(sid)
 
-  const [rows] = db.query('delete  FROM `like_list` WHERE `sid` = ?', [sid])
+  const [rows] = await db.query('delete  FROM `like_list` WHERE `sid` = ?', [
+    sid,
+  ])
   res.json(rows)
 })
 
