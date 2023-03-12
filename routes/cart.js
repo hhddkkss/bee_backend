@@ -36,17 +36,19 @@ router.get('/:member_id', async (req, res) => {
 //新增商品進購物車
 //- 網址 post  /cart
 router.post('/', async (req, res) => {
-  const { member_id, product_id, quantity } = req.body
+  const { member_id, product_id } = req.body
 
-  try {
-    const [results] = await db.query(
-      'INSERT INTO `cart_item` (member_id, product_id, quantity,modify_at) VALUES (?, ?, ?,NOW())',
-      [member_id, product_id, quantity]
-    )
+  for (let i = 0; i < product_id.length; i++) {
+    try {
+      const [results] = await db.query(
+        'INSERT INTO `cart_item` (member_id, product_id, quantity,modify_at) VALUES (?, ?, 1,NOW())',
+        [member_id, product_id[i]]
+      )
 
-    res.json(results)
-  } catch (e) {
-    console.log('新增購物車錯誤')
+      res.json(results)
+    } catch (e) {
+      console.log('新增購物車錯誤')
+    }
   }
 })
 
