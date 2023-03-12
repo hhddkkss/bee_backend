@@ -8,10 +8,11 @@ router.use((req, res, next) => {
   next()
 })
 
-const getMemberData = async (req) => {
+const getMemberData = async (req, res) => {
+  const id = req.id
   let rows = []
-  const sql = `SELECT * FROM member_list WHERE member_id = 1`
-  ;[rows] = await dataBase.query(sql)
+  const sql = `SELECT * FROM member_list WHERE member_id =?`
+  ;[rows] = await dataBase.query(sql, id)
 
   return { rows }
 }

@@ -140,6 +140,7 @@ app.use('/coupon', require('./routes/coupon'))
 app.use('/like_list', require('./routes/like_list'))
 app.use('/signUp', require('./routes/signUp'))
 app.use('/address_list', require('./routes/address_list'))
+app.use('/product_compare', require('./routes/product_compare'))
 
 //靜態內容資料夾
 app.use(express.static(__dirname + '/public'))
