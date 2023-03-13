@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>訂單</title>
+    <!-- <link rel="stylesheet" href="../public/stylesheets/style.css" /> -->
+  </head>
+  <body>
+    <%= order.orderId %>
+    <%= order.amount %>
+    <%= order.packages[0].id %>
+    <form action="/linepay/createOrder/<%= order.orderId %>" method="post">
+      <button type="submit">送出表單</button>
+  </body>
+</html>
