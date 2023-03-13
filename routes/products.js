@@ -16,7 +16,7 @@ const getProductsData = async (req, res) => {
   try {
     const [rows] = await db.query(sql)
     // const [[{ totalRows }]] = await db.query(sql2)
-    console.log(rows)
+    // console.log(rows)
 
     return rows
   } catch (error) {
