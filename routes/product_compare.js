@@ -4,14 +4,16 @@ const router = express.Router()
 
 const getCompareProducts = async (req) => {
   // 記得資料要轉成string才能往後傳!
-  // const comparedList = JSON.parse(req.body.comparedList) || []
-  const compareProductIds = '7,25,35,50,66,75,172,181,247,211'.split(',')
+  const compareProductIds = JSON.parse(req.body.comparedList) || []
+  //const compareProductIds = '7,25,35,50,66,75,172,181,247,211'.split(',')
+  // console.log('B001', compareProductIds)
   let rows = []
   const sql = 'SELECT * FROM `product_total` WHERE `product_id` = ?'
   for (let i = 0; i <= compareProductIds.length; i++) {
     let [result] = await dataBase.query(sql, [compareProductIds[i]])
     rows = [...rows, ...result]
   }
+  // console.log('B002', rows)
   return rows
 }
 
