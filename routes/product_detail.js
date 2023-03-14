@@ -15,23 +15,24 @@ const getProductDetailData = async (cat, pid) => {
   switch (cat) {
     case 1:
       sql =
-        'SELECT * FROM product_cell_phone A LEFT JOIN product_total T ON A.product_id = T.product_id LEFT JOIN product_comment C ON A.product_id = C.product_id LEFT JOIN product_brand B ON A.brand_category_id = B.brand_category_id WHERE  A.`product_id` = ?'
+        'SELECT * FROM product_cell_phone A LEFT JOIN product_total T ON A.product_id = T.product_id LEFT JOIN product_comment C ON A.product_id = C.product_id LEFT JOIN product_brand B ON A.brand_category_id = B.brand_category_id LEFT JOIN member_list M ON C.member_id = M.member_id WHERE  A.`product_id` = ?'
       break
     case 2:
       sql =
-        'SELECT * FROM product_tablet_computer A LEFT JOIN product_total T ON A.product_id = T.product_id LEFT JOIN product_comment C ON A.product_id = C.product_id LEFT JOIN product_brand B ON A.brand_category_id = B.brand_category_id WHERE  A.`product_id` = ?'
+        'SELECT * FROM product_tablet_computer A LEFT JOIN product_total T ON A.product_id = T.product_id LEFT JOIN product_comment C ON A.product_id = C.product_id LEFT JOIN product_brand B ON A.brand_category_id = B.brand_category_id LEFT JOIN member_list M ON C.member_id = M.member_id WHERE  A.`product_id` = ?'
       break
     case 3:
       sql =
-        'SELECT * FROM product_headphones A LEFT JOIN product_total T ON A.product_id = T.product_id LEFT JOIN product_comment C ON A.product_id = C.product_id LEFT JOIN product_brand B ON A.brand_category_id = B.brand_category_id WHERE  A.`product_id` = ?'
+        'SELECT * FROM product_headphones A LEFT JOIN product_total T ON A.product_id = T.product_id LEFT JOIN product_comment C ON A.product_id = C.product_id LEFT JOIN product_brand B ON A.brand_category_id = B.brand_category_id LEFT JOIN member_list M ON C.member_id = M.member_id WHERE  A.`product_id` = ?'
       break
     default:
       sql =
-        'SELECT * FROM product_cell_phone A LEFT JOIN product_total T ON A.product_id = T.product_id LEFT JOIN product_comment C ON A.product_id = C.product_id LEFT JOIN product_brand B ON A.brand_category_id = B.brand_category_id WHERE  A.`product_id` = ?'
+        'SELECT * FROM product_cell_phone A LEFT JOIN product_total T ON A.product_id = T.product_id LEFT JOIN product_comment C ON A.product_id = C.product_id LEFT JOIN product_brand B ON A.brand_category_id = B.brand_category_id LEFT JOIN member_list M ON C.member_id = M.member_id WHERE  A.`product_id` = ?'
   }
   // console.log(sql)
   try {
     const [rows] = await dataBase.query(sql, [pid])
+    // console.log('r', rows)
 
     return rows
   } catch (error) {}
