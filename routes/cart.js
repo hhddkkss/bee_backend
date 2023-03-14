@@ -34,9 +34,11 @@ router.get('/:member_id', async (req, res) => {
 })
 
 //新增商品進購物車
-//- 網址 post  /cart
+
 router.post('/', async (req, res) => {
   const { member_id, product_id } = req.body
+
+  //判斷有沒有值進來 有的話找資料庫 有沒有member＿id的商品
 
   for (let i = 0; i < product_id.length; i++) {
     try {
@@ -51,6 +53,56 @@ router.post('/', async (req, res) => {
     }
   }
 })
+
+//- 網址 post  /cart
+// router.post('/', async (req, res) => {
+//   const { member_id, product_id } = req.body
+
+//   for (let i = 0; i < product_id.length; i++) {
+//     //判斷有沒有值進來 有的話找資料庫 有沒有member＿id的商品
+//     if (member_id && product_id) {
+//       const [hasCartItem] = await db.query(
+//         'SELECT * FROM `cart_item` WHERE `member_id` = ' +
+//           member_id +
+//           ' AND `product_id`=' +
+//           product_id[i]
+//       )
+
+//       //判斷資料表裡沒有才寫入
+//       if (hasCartItem) {
+//       } else {
+//         try {
+//           const [results] = await db.query(
+//             'INSERT INTO `cart_item` (member_id, product_id, quantity,modify_at) VALUES (?, ?, 1,NOW())',
+//             [member_id, product_id[i]]
+//           )
+
+//           res.json(results)
+//         } catch (e) {
+//           console.log('新增購物車錯誤')
+//         }
+//       }
+//     }
+//   }
+// })
+
+//- 網址 get /cart
+// router.get('/:member_id/:product_id', async (req, res) => {
+//   const { member_id, product_id } = req.params
+
+//   //判斷有沒有值進來 有的話找資料庫 有沒有member＿id的商品
+
+//   if (member_id && product_id) {
+//     const [hasCartItem] = await db.query(
+//       'SELECT * FROM `cart_item` WHERE `member_id` = ' +
+//         member_id +
+//         ' AND `product_id`=' +
+//         product_id
+//     )
+//     console.log(hasCartItem)
+//     res.json(hasCartItem)
+//   }
+// })
 
 //更改商品數量 /cart/1
 router.put('/:sid', async (req, res) => {
