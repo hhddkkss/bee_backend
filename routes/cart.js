@@ -37,8 +37,17 @@ router.get('/:member_id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   const { member_id, product_id } = req.body
-
+  console.log(member_id, product_id)
   //判斷有沒有值進來 有的話找資料庫 有沒有member＿id的商品
+
+  // const [rows] = await db.query(
+  //   'SELECT * FROM `cart_item`m WHERE member_id = ? ',
+  //   [member_id]
+  // )
+  // console.log(rows, 'result')
+
+  // const InCart = rows.map((v) => v.product_id)
+  // console.log(InCart, 'incart')
 
   for (let i = 0; i < product_id.length; i++) {
     try {

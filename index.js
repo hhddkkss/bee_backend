@@ -140,7 +140,6 @@ app.use('/products', require('./routes/products'))
 app.use('/cart', require('./routes/cart'))
 app.use('/coupon', require('./routes/coupon'))
 app.use('/like_list', require('./routes/like_list'))
-//因為出錯所以註解aaron
 app.use('/signUp', require('./routes/signUp'))
 app.use('/address_list', require('./routes/address_list'))
 app.use('/product_compare', require('./routes/product_compare'))
