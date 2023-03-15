@@ -169,4 +169,34 @@ router.delete('/delete/:sid', async (req, res) => {
   }
 })
 
+//商品細節頁的加入購物車
+router.post('/detailAddCart', async (req, res) => {
+  const memberId = req.body.memberId || 1
+  const productId = req.body.productId || 1
+  const count = req.body.count || 2
+
+  //抓會員原cart資料
+  let oriSql = `SELECT C.product_id FROM cart_item C WHERE C.member_id = ?  `
+  let [alreadyCart] = await db.query(oriSql, [memberId])
+  alreadyCart = alreadyCart.map((v) => {
+    return v.product_id
+  })
+  //判斷是否已存在該商品?
+  let isIn = alreadyCart.includes(parseInt(productId))
+  console.log('A00', alreadyCart, 'A02', isIn, 'A03', typeof productId)
+  if (isIn) {
+    //更新數量
+    let newCSQL =
+      'UPDATE `cart_item` SET `quantity`=? ,`modify_at`=NOW() WHERE `member_id` = ? AND `product_id` = ?'
+    let [updateResult] = await db.query(newCSQL, [count, memberId, productId])
+    res.json(updateResult)
+  } else {
+    //加入購物車
+    let addtSQL =
+      'INSERT INTO `cart_item`(`member_id`, `product_id`, `quantity`, `modify_at`) VALUES (?,?,?,NOW())'
+    let [addResult] = await db.query(addtSQL, [memberId, productId, count])
+    res.json(addResult)
+  }
+})
+
 module.exports = router

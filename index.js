@@ -1,17 +1,23 @@
+if (process.argv[2] && process.argv[2] == "production") {
+  require("dotenv").config({
+    path: "./production.env",
+  });
+} if (process.argv[2] && process.argv[2] == "em") {
+  require("dotenv").config({
+    path: "./em.env",
+  });
+}
 //aaron test  database 測試資料庫用 正式寫會刪除
-if (process.argv[2] && process.argv[2] == 'production') {
-  require('dotenv').config({
-    path: './production.env',
-  })
-} else if (process.argv[2] && process.argv[2] == 'aaron') {
+if (process.argv[2] && process.argv[2] == 'aaron') {
   require('dotenv').config({
     path: './aaron.env',
   })
-} else {
-  require('dotenv').config({
-    path: './dev.env',
-  })
-}
+}  
+else {
+  require("dotenv").config({
+    path: "./dev.env",
+  });
+
 
 //引入區
 //express
@@ -33,12 +39,27 @@ const bcrypt = require('bcryptjs')
 //Token
 const jwt = require('jsonwebtoken')
 
+// app.listen(3007, () => {
+//   console.log("OPEN");
+// });
+const upload = require(__dirname + "/modules/upload-img");
 //2.建立 web server 物件
 const app = express()
 //EJS
-app.set('view engine', 'ejs')
-app.set('views', __dirname + '/views')
+app.set("view engine", "ejs");
+app.set("views", __dirname + "/views");
 //設定白名單
+var corsOptions = {
+  origin: function (origin, callback) {
+    callback(null, true);
+  },
+};
+app.use(cors(corsOptions));
+//上傳圖片
+// app.post("/try-upload2", upload.array("photos"), async (req, res) => {
+//   res.json(req.files);
+// });
+
 
 //session設定
 app.use(
@@ -53,14 +74,44 @@ app.use(
   })
 )
 //Top-level middleware
-app.use(express.urlencoded({ extended: false }))
-app.use(express.json())
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
-app.use((req, res, next) => {
-  res.locals.title = 'Beebee'
 
-  next()
-})
+//路由Routers
+
+app.post("/try-upload", upload.single("avatar"), async (req, res) => {
+  res.json(req.file);
+  /*
+  if(req.file && req.file.originalname){
+      await fs.rename(req.file.path, `public/imgs/${req.file.originalname}`);
+      res.json(req.file);
+  } else {
+      res.json({msg:'沒有上傳檔案'});
+  }
+  */
+});
+
+app.post("/try-upload2", upload.array("photos"), async (req, res) => {
+  res.json(req.files);
+});
+
+app.get("/", (req, res) => {
+  res.render("main", { name: "beebee" });
+});
+
+app.get("/try_db", async (req, res) => {
+  const [rows] = await dataBase.query("SELECT * FROM member_list LIMIT 15");
+  res.json(rows);
+});
+
+app.use("/member_page", require("./routes/member_page"));
+app.use("/home_page", require("./routes/home_page"));
+// app.use("/article_page", require("./routes/article_page"));
+
+
+
+
 app.use(cors())
 
 //路由Routers
@@ -151,7 +202,6 @@ app.use(express.static('node_modules/bootstrap/dist'))
 app.use(
   express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free')
 )
-
 //404錯誤頁面Router
 app.use((req, res) => {
   res.status(404).send(`<h1>找不到QQ</h1>`)
