@@ -49,28 +49,25 @@ router.post('/', async (req, res) => {
     'SELECT C.product_id FROM `cart_item` C WHERE member_id = ? ',
     [member_id]
   )
-  console.log(rows, 'result')
+  // console.log(rows, 'result')
   rows = rows.map((v) => {
     return v.product_id
   })
-  console.log(rows, 'result2')
+  // console.log(rows, 'result2')
 
   // console.log('A3', product_id[0])
-  console.log('A4', !rows.includes(1))
-
-  // ! FIXED
+  // console.log('A4', !rows.includes(1))
 
   const waitToAdd = product_id.map((v) => {
     if (!rows.includes(v)) {
-      console.log('A3', v)
+      // console.log('A3', v)
       return v
     } else {
-      console.log('A5', v)
+      // console.log('A5', v)
       return
     }
   })
-  console.log(waitToAdd, 'waitToAdd')
-  // ! FIXED
+  // console.log(waitToAdd, 'waitToAdd')
 
   for (let i = 0; i < waitToAdd.length; i++) {
     try {
@@ -139,6 +136,24 @@ router.put('/minus/:sid', async (req, res) => {
   const quantity = parseInt(req.body.quantity) - 1
   const sid = req.params.sid
 
+  //數量為0 執行刪除
+  if (quantity === 0) {
+    if (sid == 0) {
+      res.send('刪除失敗')
+    }
+    try {
+      const results = await db.query(
+        'DELETE FROM `cart_item` WHERE `sid` = ? ',
+        [sid]
+      )
+
+      res.json(results)
+    } catch (error) {
+      console.log('刪除失敗')
+    }
+  }
+
+  //數量不為0 正常-1
   try {
     const results = await db.query(
       'UPDATE `cart_item` SET quantity = ? WHERE sid = ?',
