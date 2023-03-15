@@ -42,23 +42,41 @@ router.get('/api/:member_id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   const { member_id, product_id } = req.body
-  console.log(member_id, product_id)
+  console.log('A1', member_id, 'A2', product_id)
   //判斷有沒有值進來 有的話找資料庫 有沒有member＿id的商品
 
-  // const [rows] = await db.query(
-  //   'SELECT * FROM `cart_item`m WHERE member_id = ? ',
-  //   [member_id]
-  // )
-  // console.log(rows, 'result')
+  let [rows] = await db.query(
+    'SELECT C.product_id FROM `cart_item` C WHERE member_id = ? ',
+    [member_id]
+  )
+  console.log(rows, 'result')
+  rows = rows.map((v) => {
+    return v.product_id
+  })
+  console.log(rows, 'result2')
 
-  // const InCart = rows.map((v) => v.product_id)
-  // console.log(InCart, 'incart')
+  // console.log('A3', product_id[0])
+  console.log('A4', !rows.includes(1))
 
-  for (let i = 0; i < product_id.length; i++) {
+  // ! FIXED
+
+  const waitToAdd = product_id.map((v) => {
+    if (!rows.includes(v)) {
+      console.log('A3', v)
+      return v
+    } else {
+      console.log('A5', v)
+      return
+    }
+  })
+  console.log(waitToAdd, 'waitToAdd')
+  // ! FIXED
+
+  for (let i = 0; i < waitToAdd.length; i++) {
     try {
       const [results] = await db.query(
         'INSERT INTO `cart_item` (member_id, product_id, quantity,modify_at) VALUES (?, ?, 1,NOW())',
-        [member_id, product_id[i]]
+        [member_id, waitToAdd[i]]
       )
 
       res.json(results)
@@ -134,11 +152,12 @@ router.put('/minus/:sid', async (req, res) => {
 })
 
 //刪除購物車內商品 /cart/1
-router.delete('delete/:sid', async (req, res) => {
+router.delete('/delete/:sid', async (req, res) => {
   const sid = req.params.sid
 
-  console.log(sid)
-
+  if (sid == 0) {
+    res.send('刪除失敗')
+  }
   try {
     const results = await db.query('DELETE FROM `cart_item` WHERE `sid` = ? ', [
       sid,
