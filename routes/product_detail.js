@@ -12,7 +12,8 @@ router.use((req, res, next) => {
 const getProductDetailData = async (cat, pid) => {
   // console.log('c2', typeof cat, pid)
   let sql =
-    'SELECT * FROM product_total A LEFT JOIN product_comment C ON A.product_id = C.product_id LEFT JOIN product_brand B ON A.brand_category_id = B.brand_category_id LEFT JOIN member_list M ON C.member_id = M.member_id WHERE  A.`product_id` = ?'
+    // 'SELECT * FROM product_total A LEFT JOIN product_comment C ON A.product_id = C.product_id LEFT JOIN product_brand B ON A.brand_category_id = B.brand_category_id LEFT JOIN member_list M ON C.member_id = M.member_id WHERE  A.`product_id` = ?'
+    'SELECT A.product_id,A.product_name,A.product_price,A.product_pic,A.product_category_id,A.brand_category_id,A.product_detail_content,B.brand_category,C.p_comment_id,C.star,C.content,C.comment_created_at,M.email,M.member_id FROM product_total A LEFT JOIN product_brand B ON A.brand_category_id = B.brand_category_id LEFT JOIN product_comment C ON A.product_id = C.product_id LEFT JOIN member_list M ON C.member_id = M.member_id WHERE A.product_id =?'
   // console.log('sql', sql)
   try {
     const [rows] = await dataBase.query(sql, [pid])
