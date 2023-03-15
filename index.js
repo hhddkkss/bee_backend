@@ -49,7 +49,12 @@ const app = express()
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
 //設定白名單
-
+var corsOptions = {
+  origin: function (origin, callback) {
+    callback(null, true);
+  },
+};
+app.use(cors(corsOptions));
 //上傳圖片
 // app.post("/try-upload2", upload.array("photos"), async (req, res) => {
 //   res.json(req.files);

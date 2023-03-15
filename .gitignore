@@ -17,6 +17,7 @@ tmp_uploads
 upload
 # dev.env 
 production.env
+.DS_Store
 #要設 expressjs service和 db config
 
 
