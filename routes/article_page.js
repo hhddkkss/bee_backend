@@ -39,5 +39,12 @@
 //     res.json(await getMemberData(req))
 // })
 
-// //記得!!!!----將路由作為模組打包匯出----
-// module.exports = router
+//文章擷取API
+router.get('/article_api', async (req, res) => {
+  res.json(await getArticlerData(req))
+})
+
+
+
+//記得!!!!----將路由作為模組打包匯出----
+module.exports = router

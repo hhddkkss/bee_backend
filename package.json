@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "em": "nodemon index.js em",
+    "aaron": "nodemon index.js aaron",
     "dev": "nodemon index.js dev",
     "start": "node index.js production",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,6 +22,7 @@
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.8",
+    "email-validator": "^2.0.4",
     "express": "^4.18.2",
     "express-mysql-session": "^2.1.8",
     "express-session": "^1.17.3",
@@ -31,6 +33,15 @@
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.0.1",
     "nodemon": "^2.0.20",
+    "password-validator": "^5.3.0",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.35.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.4"
   }
 }
