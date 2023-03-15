@@ -16,6 +16,7 @@ if (process.argv[2] && process.argv[2] == "production") {
 //express
 const express = require("express");
 const dataBase = require("./modules/db_connect");
+const cors = require("cors");
 
 // app.listen(3007, () => {
 //   console.log("OPEN");
@@ -27,7 +28,12 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
 //設定白名單
-
+var corsOptions = {
+  origin: function (origin, callback) {
+    callback(null, true);
+  },
+};
+app.use(cors(corsOptions));
 //上傳圖片
 // app.post("/try-upload2", upload.array("photos"), async (req, res) => {
 //   res.json(req.files);
