@@ -10,16 +10,21 @@ router.use((req, res, next) => {
 
 //獲取某個會員的購物車
 //- 網址 /cart/4
-router.get('/:member_id', async (req, res) => {
+router.get('/api/:member_id', async (req, res) => {
   // request 中拿到 member_id
   const { member_id } = req.params
-  console.log(member_id)
 
   try {
     const [rows] = await db.query(
-      'SELECT * FROM `cart_item` WHERE `member_id` = ?',
+      'SELECT DISTINCT product_total.* ,cart_item.* FROM `cart_item` INNER JOIN product_total ON cart_item.product_id = product_total.product_id WHERE cart_item.member_id = ?',
       [member_id]
     )
+
+    //* 會有重複值
+    // const [rows] = await db.query(
+    //   'SELECT * FROM `cart_item` INNER JOIN product_total ON cart_item.product_id = product_total.product_id WHERE cart_item.member_id = ?',
+    //   [member_id]
+    // )
 
     //總共幾樣商品
     const [[{ totalRows }]] = await db.query(
@@ -95,27 +100,25 @@ router.post('/', async (req, res) => {
 //   }
 // })
 
-//- 網址 get /cart
-// router.get('/:member_id/:product_id', async (req, res) => {
-//   const { member_id, product_id } = req.params
+//增加商品數量 /cart/1
+router.put('/plus/:sid', async (req, res) => {
+  const quantity = parseInt(req.body.quantity) + 1
+  const sid = req.params.sid
 
-//   //判斷有沒有值進來 有的話找資料庫 有沒有member＿id的商品
+  try {
+    const results = await db.query(
+      'UPDATE `cart_item` SET quantity = ? WHERE sid = ?',
+      [quantity, sid]
+    )
 
-//   if (member_id && product_id) {
-//     const [hasCartItem] = await db.query(
-//       'SELECT * FROM `cart_item` WHERE `member_id` = ' +
-//         member_id +
-//         ' AND `product_id`=' +
-//         product_id
-//     )
-//     console.log(hasCartItem)
-//     res.json(hasCartItem)
-//   }
-// })
-
-//更改商品數量 /cart/1
-router.put('/:sid', async (req, res) => {
-  const quantity = req.body.quantity
+    res.json(results)
+  } catch (error) {
+    console.log('修改失敗')
+  }
+})
+//減少商品數量 /cart/1
+router.put('/minus/:sid', async (req, res) => {
+  const quantity = parseInt(req.body.quantity) - 1
   const sid = req.params.sid
 
   try {
@@ -131,8 +134,10 @@ router.put('/:sid', async (req, res) => {
 })
 
 //刪除購物車內商品 /cart/1
-router.delete('/:sid', async (req, res) => {
+router.delete('delete/:sid', async (req, res) => {
   const sid = req.params.sid
+
+  console.log(sid)
 
   try {
     const results = await db.query('DELETE FROM `cart_item` WHERE `sid` = ? ', [
