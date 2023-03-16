@@ -136,23 +136,6 @@ router.put('/minus/:sid', async (req, res) => {
   const quantity = parseInt(req.body.quantity) - 1
   const sid = req.params.sid
 
-  //數量為0 執行刪除
-  if (quantity === 0) {
-    if (sid == 0) {
-      res.send('刪除失敗')
-    }
-    try {
-      const results = await db.query(
-        'DELETE FROM `cart_item` WHERE `sid` = ? ',
-        [sid]
-      )
-
-      res.json(results)
-    } catch (error) {
-      console.log('刪除失敗')
-    }
-  }
-
   //數量不為0 正常-1
   try {
     const results = await db.query(
