@@ -1,7 +1,7 @@
-// const express = require('express');
-// const dataBase = require('./../modules/db_connect')
+const express = require('express')
+const dataBase = require('./../modules/db_connect')
 
-// const router = express.Router();
+const router = express.Router()
 
 // //登入後才能檢視要塞這
 // router.use((req,res,next)=>{
@@ -48,3 +48,4 @@
 
 //記得!!!!----將路由作為模組打包匯出----
 // module.exports = router
+module.exports = router
