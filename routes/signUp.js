@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
   }
 
   const sql =
-    'INSERT INTO `member_list`(`member_name`,`email`,`password`,`mobile`,`gender`,`birthday`,`address_city`,`address_dist`,`address_rd`,`last_edit_date`,`member_level_id`) VALUES (?,?,?,?,?,?,?,?,?,NOW(),3)'
+    'INSERT INTO `member_list`(`member_name`,`email`,`password`,`mobile`,`gender`,`birthday`,`address_city`,`address_dist`,`address_rd`,`last_edit_date`,`member_level_id`,`member_pic`) VALUES (?,?,?,?,?,?,?,?,?,NOW(),3,?)'
 
   if (output.success) {
     const [result] = await dataBase.query(sql, [
@@ -74,6 +74,7 @@ router.post('/', async (req, res) => {
       output.data.address_city,
       output.data.address_dist,
       output.data.address_rd,
+      'member_default_avatar.png',
     ])
     output.affectedRows = result.affectedRows
     output.data.sid = result.insertId
