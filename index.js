@@ -173,6 +173,7 @@ app.post('/login', async (req, res) => {
     )
     output.memberId = rows[0].member_id
     output.memberEmail = rows[0].email
+    output.memberName = rows[0].member_name
     res.json(output)
   } else {
     output.error = '402帳號密碼錯誤'
