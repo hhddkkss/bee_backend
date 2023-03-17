@@ -49,38 +49,39 @@ router.post('/', async (req, res) => {
     'SELECT C.product_id FROM `cart_item` C WHERE member_id = ? ',
     [member_id]
   )
-  // console.log(rows, 'result')
+  console.log(rows, 'result')
   rows = rows.map((v) => {
     return v.product_id
   })
-  // console.log(rows, 'result2')
+  console.log(rows, 'result2')
 
-  // console.log('A3', product_id[0])
-  // console.log('A4', !rows.includes(1))
+  // console.log('A3', typeof product_id[0])
+  console.log('A4', !rows.includes('1'))
 
-  const waitToAdd = product_id.map((v) => {
+  let waitToAdd = product_id.map((v) => {
     if (!rows.includes(v)) {
-      // console.log('A3', v)
+      console.log('A3', typeof v)
       return v
     } else {
       // console.log('A5', v)
       return
     }
   })
-  // console.log(waitToAdd, 'waitToAdd')
+  console.log(waitToAdd, 'waitToAdd')
 
   for (let i = 0; i < waitToAdd.length; i++) {
-    try {
+    if (waitToAdd[i]) {
       const [results] = await db.query(
         'INSERT INTO `cart_item` (member_id, product_id, quantity,modify_at) VALUES (?, ?, 1,NOW())',
         [member_id, waitToAdd[i]]
       )
-
+      console.log(1)
       res.json(results)
-    } catch (e) {
-      console.log('新增購物車錯誤')
     }
+    console.log('新增購物車錯誤')
   }
+
+  // console.log('新增購物車錯誤')
 })
 
 //- 網址 post  /cart
