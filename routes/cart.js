@@ -40,6 +40,28 @@ router.get('/api/:member_id', async (req, res) => {
 
 //新增商品進購物車
 
+router.post('/addItem', async (req, res) => {
+  const { member_id, product_id } = req.body
+  console.log(11111)
+  //判斷有沒有值進來 有的話找資料庫 有沒有member＿id的商品
+
+  let [rows] = await db.query(
+    'SELECT C.product_id FROM `cart_item` C WHERE member_id = ? ',
+    [member_id]
+  )
+  //
+  if (rows.length === 0) {
+    const [results] = await db.query(
+      'INSERT INTO `cart_item` (member_id, product_id, quantity,modify_at) VALUES (?, ?, 1,NOW())',
+      [member_id, product_id]
+    )
+    console.log(9999)
+    res.json(results)
+  } else {
+    res.send('新增失敗')
+  }
+})
+
 router.post('/', async (req, res) => {
   const { member_id, product_id } = req.body
   console.log('A1', member_id, 'A2', product_id)
