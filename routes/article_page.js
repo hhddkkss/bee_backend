@@ -121,10 +121,52 @@ router.post('/postArticleComments', async (req, res) => {
   res.json(result)
 })
 
+// 加入收藏文章
+router.post('/memArticleLikeOrRemove', async (req, res) => {
+  let output = {
+    success: false,
+    res: [],
+  }
+  //先尋找該會員原本喜愛資料
+  const getOgSql =
+    'SELECT article_id FROM `article_like` WHERE `like_member_id` = ?'
+  let [ogResult] = await dataBase.query(getOgSql, [req.body.memberId])
+  ogResult = ogResult.map((v) => {
+    return v.article_id
+  })
+  //將丟入資料與舊資料比對,是否已經加入過?
+  const newLike = JSON.parse(req.body.likeArticle)
+  const isIn = ogResult.includes(newLike)
+  //若有新資料再加入
+  let endResult = {}
+  if (!isIn) {
+    output.message = '加入成功!'
+    const addToLikeSql =
+      'INSERT INTO `article_like`(`article_id`,`like_member_id`) VALUES (?,?)'
+    ;[endResult] = await dataBase.query(addToLikeSql, [
+      newLike,
+      req.body.memberId,
+    ])
+  } else {
+    output.message = '已移除'
+    const delToLikeSql =
+      'DELETE FROM `article_like` WHERE `article_id`=? AND `like_member_id` = ?'
+    ;[endResult] = await dataBase.query(delToLikeSql, [
+      newLike,
+      req.body.memberId,
+    ])
+  }
+  console.log(endResult)
+  output.success = !!endResult.affectedRows
+  output.res = endResult
+
+  res.json(output)
+})
+
 // 會員收藏歷史
 router.post('/memberArticleLike', async (req, res) => {
   const sql =
-    'SELECT A.*,M.email,M.member_pic FROM  `article_like` L LEFT JOIN `articles` A ON A.id=L.article_id LEFT JOIN member_list M ON A.member_id = M.member_id   WHERE L.member_id =?'
+    'SELECT A.*,M.email,M.member_pic,L.like_member_id  FROM article_like L LEFT JOIN articles A ON A.article_id=L.article_id LEFT JOIN member_list M ON A.member_id = M.member_id WHERE L.like_member_id =?'
   let [result] = await dataBase.query(sql, [req.body.memberId])
   result = result.map((v, i) => {
     return { ...v, email: v.email.split('@')[0] }
