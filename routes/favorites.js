@@ -9,8 +9,9 @@ router.use((req, res, next) => {
 })
 
 //獲得收藏清單
-router.get('/', async (req, res) => {
-  const { member_id } = req.body
+router.get('/:member_id', async (req, res) => {
+  const { member_id } = req.params
+
   const [rows] = await db.query(
     'SELECT * FROM `like_list` WHERE member_id= ?',
     [member_id]
@@ -35,7 +36,7 @@ router.post('/', async (req, res) => {
       'INSERT INTO `like_list`( `member_id`, `product_id`, `modify_at`) VALUES (?,?,NOW())',
       [member_id, product_id]
     )
-
+    console.log('新增最愛')
     res.json([result])
   } else {
     res.send('新增錯誤')
@@ -45,11 +46,12 @@ router.post('/', async (req, res) => {
 //刪除收藏
 router.delete('/', async (req, res) => {
   const { member_id, product_id } = req.body
-
+  console.log(member_id, product_id)
   const [rows] = await db.query(
     'delete  FROM `like_list` WHERE `member_id` = ? AND product_id = ?',
     [member_id, product_id]
   )
+  console.log('刪除最愛')
   res.json(rows)
 })
 
