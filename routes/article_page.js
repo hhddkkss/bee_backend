@@ -195,6 +195,20 @@ router.post('/memberArticleLike', async (req, res) => {
   })
   res.json(result)
 })
+// 會員收藏歷史ID
+router.post('/memberArticleLikeID', async (req, res) => {
+  const sql =
+    'SELECT A.*,M.email,M.member_pic,L.like_member_id  FROM article_like L LEFT JOIN articles A ON A.article_id=L.article_id LEFT JOIN member_list M ON A.member_id = M.member_id WHERE L.like_member_id =?'
+  let [result] = await dataBase.query(sql, [req.body.memberId])
+  result = result.map((v, i) => {
+    return {
+      ...v,
+      email: v.email.split('@')[0],
+      article_hashtag: v.article_hashtag.split('#'),
+    }
+  })
+  res.json(result)
+})
 
 // 會員發文歷史
 router.post('/memberArticlePosted', async (req, res) => {
@@ -202,9 +216,26 @@ router.post('/memberArticlePosted', async (req, res) => {
     'SELECT A.*,M.email,M.member_pic FROM  `articles` A LEFT JOIN member_list M ON A.member_id = M.member_id   WHERE A.member_id =?'
   let [result] = await dataBase.query(sql, [req.body.memberId])
   result = result.map((v, i) => {
-    return { ...v, email: v.email.split('@')[0] }
+    return {
+      ...v,
+      email: v.email.split('@')[0],
+      article_hashtag: v.article_hashtag.split('#'),
+    }
   })
   res.json(result)
 })
 
+//最熱門文章(收藏數及留言數)
+router.get('/hotIssue', async (req, res) => {
+  const SQL =
+    'SELECT a.article_id,a.title,a.article_pic_main,M.email,M.member_pic, COUNT(b.message_id)+COUNT(c.sid) AS hotGrade FROM articles a LEFT JOIN article_message b ON a.article_id = b.article_id LEFT JOIN article_like c ON a.article_id = c.article_id LEFT JOIN member_list M ON a.member_id = M.member_id GROUP BY a.article_id  ORDER BY hotGrade DESC LIMIT 0,5'
+  let [result] = await dataBase.query(SQL)
+  result = result.map((v, i) => {
+    return {
+      ...v,
+      email: v.email.split('@')[0],
+    }
+  })
+  res.json(result)
+})
 module.exports = router
