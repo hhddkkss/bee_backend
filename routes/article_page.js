@@ -3,10 +3,24 @@ const dataBase = require('./../modules/db_connect')
 
 const router = express.Router()
 
-const getAllArticles = async (category) => {
+const getAllArticles = async () => {
   let sql =
-    'SELECT A.*,M.email,M.member_pic FROM articles A LEFT JOIN member_list M ON A.member_id = M.member_id WHERE 1'
+    'SELECT A.article_id,A.article_category_id,A.title,A.content_1,A.member_id,A.article_pic_main,A.article_hashtag,M.email,M.member_pic FROM articles A LEFT JOIN member_list M ON A.member_id = M.member_id WHERE 1'
   let [result] = await dataBase.query(sql)
+  result = result.map((v) => {
+    return {
+      ...v,
+      article_hashtag: v.article_hashtag.split('#'),
+      email: v.email.split('@')[0],
+    }
+  })
+
+  return result
+}
+const getSingleArticle = async (id) => {
+  let sql =
+    'SELECT A.*,M.email,M.member_pic FROM articles A LEFT JOIN member_list M ON A.member_id = M.member_id WHERE A.article_id = ?'
+  let [result] = await dataBase.query(sql, [id])
   result = result.map((v) => {
     return {
       ...v,
@@ -45,6 +59,10 @@ router.get('/frontArticle_api', async (req, res) => {
 // 拿全部文章
 router.get('/allArticle_api', async (req, res) => {
   res.json(await getAllArticles())
+})
+// 拿單篇文章
+router.post('/singleArticle_api', async (req, res) => {
+  res.json(await getSingleArticle(req.body.article_id))
 })
 
 // 發文
@@ -169,7 +187,11 @@ router.post('/memberArticleLike', async (req, res) => {
     'SELECT A.*,M.email,M.member_pic,L.like_member_id  FROM article_like L LEFT JOIN articles A ON A.article_id=L.article_id LEFT JOIN member_list M ON A.member_id = M.member_id WHERE L.like_member_id =?'
   let [result] = await dataBase.query(sql, [req.body.memberId])
   result = result.map((v, i) => {
-    return { ...v, email: v.email.split('@')[0] }
+    return {
+      ...v,
+      email: v.email.split('@')[0],
+      article_hashtag: v.article_hashtag.split('#'),
+    }
   })
   res.json(result)
 })
