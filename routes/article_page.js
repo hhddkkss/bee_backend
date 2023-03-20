@@ -238,4 +238,13 @@ router.get('/hotIssue', async (req, res) => {
   })
   res.json(result)
 })
+
+//該文章案讚數
+router.post('/singleArtLikes', async (req, res) => {
+  const SQL =
+    'SELECT COUNT(c.sid) AS likesCount FROM articles a LEFT JOIN article_like c ON a.article_id = c.article_id WHERE a.article_id =?'
+  let [result] = await dataBase.query(SQL, [req.body.article_id])
+
+  res.json(result)
+})
 module.exports = router
