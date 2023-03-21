@@ -6,7 +6,7 @@ const router = express.Router()
 
 const getAllArticles = async () => {
   let sql =
-    'SELECT A.article_id,A.article_category_id,A.title,A.content_1,A.member_id,A.article_pic_main,A.article_hashtag,M.email,M.member_pic FROM articles A LEFT JOIN member_list M ON A.member_id = M.member_id WHERE 1'
+    'SELECT A.article_id,A.article_category_id,A.title,A.content_1,A.member_id,A.article_pic_main,A.article_hashtag,M.email,M.member_pic FROM articles A LEFT JOIN member_list M ON A.member_id = M.member_id WHERE `article_OnPublic` = 1'
   let [result] = await dataBase.query(sql)
   result = result.map((v) => {
     return {
@@ -20,7 +20,7 @@ const getAllArticles = async () => {
 }
 const getSingleArticle = async (id) => {
   let sql =
-    'SELECT A.*,M.email,M.member_pic FROM articles A LEFT JOIN member_list M ON A.member_id = M.member_id WHERE A.article_id = ?'
+    'SELECT A.*,M.email,M.member_pic FROM articles A LEFT JOIN member_list M ON A.member_id = M.member_id WHERE A.article_id = ? '
   let [result] = await dataBase.query(sql, [id])
   result = result.map((v) => {
     return {
@@ -35,7 +35,7 @@ const getSingleArticle = async (id) => {
 
 const getFrontArticles = async () => {
   let sql =
-    'SELECT A.*,M.email,M.member_pic FROM articles A LEFT JOIN member_list M ON A.member_id = M.member_id WHERE `article_category_id` = ? ORDER BY article_id DESC LIMIT 0 , 1'
+    'SELECT A.*,M.email,M.member_pic FROM articles A LEFT JOIN member_list M ON A.member_id = M.member_id WHERE `article_category_id` = ? AND `article_OnPublic`=1 ORDER BY article_id DESC LIMIT 0 , 1'
   let result = []
   for (let i = 1; i < 4; i++) {
     let [a] = await dataBase.query(sql, [i])
@@ -48,7 +48,7 @@ const getFrontArticles = async () => {
     })
     result = [...result, ...a]
   }
-  console.log(result)
+  // console.log(result)
   return result
 }
 
@@ -71,7 +71,7 @@ router.post(
   '/memberPostArticlePic',
   articleUpload.single('articlePic'),
   (req, res) => {
-    console.log('files:', req.file)
+    // console.log('files:', req.file)
     res.json(req.file)
   }
 )
@@ -84,8 +84,9 @@ router.post('/memberPostArticle', async (req, res) => {
     error: {},
   }
   output.data = req.body
+  console.log(output.data)
   let sql =
-    'INSERT INTO `articles`( `article_category_id`, `title`, `content_1`, `content_2`, `member_id`, `created_at`, `article_pic_main`, `article_pic_content`, `article_hashtag`) VALUES (?,?,?,?,?,NOW(),?,?,?)'
+    'INSERT INTO `articles`( `article_category_id`, `title`, `content_1`, `content_2`, `member_id`, `created_at`, `article_pic_main`, `article_pic_content`, `article_hashtag`, `article_OnPublic`) VALUES (?,?,?,?,?,NOW(),?,?,?,?)'
   // 錯誤判斷
   if (!output.data.memberId) {
     output.error.member = '請先登入'
@@ -99,12 +100,12 @@ router.post('/memberPostArticle', async (req, res) => {
     output.error.category = '請為文章分類'
     output.success = false
   }
-  if (!output.data.content1) {
-    output.error.content = '請輸入文章內容'
+  if (!output.data.content_1) {
+    output.error.content_1 = '請輸入文章內容'
     output.success = false
   }
-  if (!output.data.main_pic) {
-    output.error.main_pic = '請附上至少一張圖片'
+  if (!output.data.article_pic_main) {
+    output.error.article_pic_main = '請附上至少一張圖片'
     output.success = false
   }
 
@@ -112,19 +113,20 @@ router.post('/memberPostArticle', async (req, res) => {
     const [result] = await dataBase.query(sql, [
       output.data.category,
       output.data.title,
-      output.data.content1,
-      output.data.content2,
+      output.data.content_1,
+      output.data.content_2,
       output.data.memberId,
-      output.data.main_pic,
-      output.data.content_pic,
-      output.data.hashTag,
+      output.data.article_pic_main,
+      output.data.article_pic_content,
+      output.data.hashtags,
+      output.data.article_OnPublic,
     ])
     output.success = !!result.affectedRows
-    console.log(output.success)
+    // console.log(output.success)
   } else {
     output.error.sql = '新增至資料庫失敗'
   }
-
+  console.log('output', output)
   res.json(output)
 })
 
