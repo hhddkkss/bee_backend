@@ -31,13 +31,14 @@ router.post('/order_all', async (req, res) => {
     discount,
   } = req.body
 
+  const fee = 120
   //形成訂單編號
   const time = new Date()
   //算出總價
   const getTotalPrice = (arr1, arr2) => {
     let result = []
     for (let i = 0; i < arr1.length; i++) {
-      result.push(arr1[i] * arr2[i])
+      result.push(Number(arr1[i] - 1000) * Number(arr2[i]))
     }
     const totalPrice = result.reduce((a, c) => {
       return a + c
@@ -63,7 +64,7 @@ router.post('/order_all', async (req, res) => {
     order_email: order_email,
     orderDate: dayjs(time).format('YYYY MM DD'),
     totalPrice: getTotalPrice(product_price, quantity),
-    finalPrice: getFinalPrice(getTotalPrice(product_price, quantity)),
+    finalPrice: getFinalPrice(getTotalPrice(product_price, quantity)) + fee,
     discount: discount,
   }
   console.log(
@@ -90,7 +91,7 @@ router.post('/order_all', async (req, res) => {
   let [rows] = await db.query(sql, [
     orderAllOutput.orderNum,
     member_id,
-    order_money,
+    order_money + fee,
     order_memo,
     coupon_id,
     order_recipient,
