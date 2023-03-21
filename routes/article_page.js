@@ -1,6 +1,7 @@
 const express = require('express')
 const dataBase = require('./../modules/db_connect')
-
+const articleUpload = require('./../modules/article_upload')
+//jimp 圖片處理
 const router = express.Router()
 
 const getAllArticles = async () => {
@@ -64,6 +65,16 @@ router.get('/allArticle_api', async (req, res) => {
 router.post('/singleArticle_api', async (req, res) => {
   res.json(await getSingleArticle(req.body.article_id))
 })
+
+// 發文圖片
+router.post(
+  '/memberPostArticlePic',
+  articleUpload.single('articlePic'),
+  (req, res) => {
+    console.log('files:', req.file)
+    res.json(req.file)
+  }
+)
 
 // 發文
 router.post('/memberPostArticle', async (req, res) => {
