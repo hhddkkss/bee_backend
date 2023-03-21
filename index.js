@@ -191,6 +191,7 @@ app.use('/signUp', require('./routes/signUp'))
 app.use('/address_list', require('./routes/address_list'))
 app.use('/product_compare', require('./routes/product_compare'))
 app.use('/product_detail', require('./routes/product_detail'))
+app.use('/order', require('./routes/order'))
 
 //靜態內容資料夾
 app.use(express.static(__dirname + '/public'))

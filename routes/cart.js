@@ -8,6 +8,15 @@ router.use((req, res, next) => {
   next()
 })
 
+router.delete('/empty', async (req, res) => {
+  const { member_id } = req.body
+
+  const sql = 'DELETE FROM `cart_item` WHERE `member_id` =?'
+
+  const [rows] = await db.query(sql, [member_id])
+  res.send(rows)
+})
+
 //獲取某個會員的購物車
 //- 網址 /cart/4
 router.get('/api/:member_id', async (req, res) => {
