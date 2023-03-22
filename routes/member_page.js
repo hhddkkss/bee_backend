@@ -28,8 +28,8 @@ router.get('/member_api/:member_list', async (req, res) => {
 const changeMemberPassword = async (id, newPassHashed) => {
   const sql =
     'UPDATE `member_list` SET `password`= ? ,`last_edit_date`= NOW() WHERE `member_id`=?'
-  const [result1] = await dataBase.query(sql, [newPassHashed, id])
-
+  const result1 = await dataBase.query(sql, [newPassHashed, id])
+  console.log('result1', result1)
   return result1
 }
 const MatchMemberPassword = async (req) => {
@@ -40,56 +40,71 @@ const MatchMemberPassword = async (req) => {
   }
   //將會員id宣告成變數
 
-  let memberId = req.body.id
+  let memberId = req.body.memberId
+  console.log('aaaa:', memberId)
   const passsql = `SELECT password FROM member_list WHERE member_id = ?`
   const [rows] = await dataBase.query(passsql, [memberId])
-
+  console.log('bbb:', rows)
   const realOldPass = rows[0].password
   const newPass = req.body.newPass
   const oldPass = req.body.oldPass
+  console.log('ccc:', newPass)
 
   //如果舊密碼一致,就更改密碼
-  bcrypt.compare(oldPass, realOldPass, (err, isMatch) => {
-    console.log('compareSync:', bcrypt.compareSync(oldPass, realOldPass))
-    //if(真的舊密碼解密後 跟 輸入後舊密碼 一樣)
-    if (!err) {
-      // 比對出錯，處理錯誤
-    }
-    if (isMatch) {
-      // 密碼正確，更改密碼
+  const isMatch = bcrypt.compare(oldPass, realOldPass)
+  console.log('compareSync:', bcrypt.compareSync(oldPass, realOldPass))
+  //if(真的舊密碼解密後 跟 輸入後舊密碼 一樣)
+  if (!isMatch) {
+    // 比對出錯，處理錯誤
+    console.log('error')
+  }
+  if (isMatch) {
+    console.log('yes')
+    // 密碼正確，更改密碼
 
-      //     //先把新密碼加密
-      const newPassHashed = bcrypt.hashSync(newPass, 10)
-      console.log('1:', newPassHashed)
+    //     //先把新密碼加密
+    const newPassHashed = bcrypt.hashSync(newPass, 10)
+    //   console.log('1:', newPassHashed)
 
-      console.log(bcrypt.compareSync(oldPass, realOldPass))
-      //     //將changeMemberPassword丟出的result設定給output.SqlResult
-      //      // output.SqlResult = changeMemberPassword(會員id, 會員新密碼（加密  );
-      const a = changeMemberPassword(memberId, newPassHashed).then((data) => {
-        console.log(data, 71)
-      })
-      console.log(a, 73)
-      output.SqlResult = changeMemberPassword(memberId, newPassHashed)
-      //     //是否成功更改密碼判斷
-      console.log(output.SqlResult, 76)
-      if (output.SqlResult.affectedRows > 0) {
-        output.success = true
-      } else {
-        output.success = false
-        output.error = '資料未被修改成功'
-      }
+    //   console.log(bcrypt.compareSync(oldPass, realOldPass))
+    //     //將changeMemberPassword丟出的result設定給output.SqlResult
+    //   //      // output.SqlResult = changeMemberPassword(會員id, 會員新密碼（加密  );
+    const sql =
+      'UPDATE `member_list` SET `password`= ? ,`last_edit_date`= NOW() WHERE `member_id`=?'
+    const [result1] = await dataBase.query(sql, [newPassHashed, memberId])
+
+    // const [changeResult] = changeMemberPassword(memberId, newPassHashed)
+    output.SqlResult = result1
+    //     //是否成功更改密碼判斷
+    console.log(result1.affectedRows, 76, output.SqlResult.affectedRows)
+    if (output.SqlResult.affectedRows > 0) {
+      output.success = true
     } else {
-      //     //輸入錯誤頁面
       output.success = false
+      output.error = '資料未被修改成功'
     }
-    //console.log("out:", output);
-    return output
-  })
+  } else {
+    //     //輸入錯誤頁面
+    output.success = false
+  }
+  console.log('out:', output)
+  return output
 }
 
-router.put('/password', async (req, res) => {
+router.put('/password/:member_id', async (req, res) => {
   res.json(await MatchMemberPassword(req))
 })
+
+// const getpassword = async (req) => {
+//   const sql = `SELECT password FROM member_list WHERE member_id = ?`
+//   const [rows] = await dataBase.query(sql, [req.params.member_id])
+//   return rows
+// }
+
+// router.get('/password/:member_id', async (req, res) => {
+//   res.json(await getpassword(req))
+// })
+
 // router.get("/password", (req, res) => {
 //   res.send("<h1>123</h1>");
 // });
@@ -146,7 +161,7 @@ router.put('/edit/:member_id', async (req, res) => {
   if (result.affectedRows) output.success = true
   output.result = result
   res.json(output)
-  console.log(output)
+  console.log('AAA', output)
 })
 
 // router.get("/item/:member_id", async (req, res) => {
@@ -167,6 +182,17 @@ router.post(
     res.json(result)
   }
 )
+
+//訂單
+const getshoppinglist = async (req) => {
+  const sql = `SELECT * FROM order_all WHERE member_id =? `
+  const [rows] = await dataBase.query(sql, [req.params.id])
+  return rows
+}
+
+router.get('/membershoppinglist/:member_id', async (req, res) => {
+  res.json(await getshoppinglist(req))
+})
 
 //記得!!!!----將路由作為模組打包匯出----
 module.exports = router
