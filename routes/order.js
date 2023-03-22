@@ -48,7 +48,11 @@ router.post('/order_all', async (req, res) => {
 
   //算出折扣後
   const getFinalPrice = (totalPrice) => {
-    return totalPrice - Number(discount)
+    if (discount) {
+      return totalPrice - Number(discount)
+    } else {
+      return totalPrice
+    }
   }
 
   //組成姓名
@@ -62,7 +66,7 @@ router.post('/order_all', async (req, res) => {
     orderNum: 'bee' + dayjs(time).format('YYYYMMDDhhmmss'),
     order_recipient: order_recipient,
     order_email: order_email,
-    orderDate: dayjs(time).format('YYYY MM DD'),
+    orderDate: dayjs(time).format('YYYY / MM / DD'),
     totalPrice: getTotalPrice(product_price, quantity),
     finalPrice: getFinalPrice(getTotalPrice(product_price, quantity)) + fee,
     discount: discount,
@@ -93,7 +97,7 @@ router.post('/order_all', async (req, res) => {
     member_id,
     order_money + fee,
     order_memo,
-    coupon_id,
+    coupon_id ? coupon_id : null,
     order_recipient,
     order_phone,
     order_address_city,
@@ -117,6 +121,7 @@ router.post('/order_detail', async (req, res) => {
     product_amount,
     product_price,
     payment_method,
+    product_pic,
   } = req.body
 
   console.log({
@@ -126,8 +131,31 @@ router.post('/order_detail', async (req, res) => {
     product_amount,
     product_price,
     payment_method,
+    product_pic,
   })
   console.log(55555)
+
+  let productInfo = []
+  for (let i = 0; i < product_id.length; i++) {
+    let newProductInfo = {
+      product_id: product_id[i],
+      product_name: product_name[i],
+      product_amount: product_amount[i],
+      product_price: product_price[i],
+      product_pic: product_pic[i],
+    }
+
+    productInfo.push(newProductInfo)
+  }
+
+  console.log(productInfo, 'product-info')
+  //要傳回去前端的檔案
+  const orderDetailOutput = {
+    orderId: order_id,
+    product_info: productInfo,
+    payment_method: payment_method,
+  }
+
   const sql =
     'INSERT  INTO `order_detail`(`order_id`, `product_id`, `product_name`, `product_amount`, `product_price`, `payment_method`) VALUES (?,?,?,?,?,?)'
 
@@ -141,6 +169,8 @@ router.post('/order_detail', async (req, res) => {
       payment_method,
     ])
   }
+
+  res.send(orderDetailOutput)
 })
 
 //記得!!!!----將路由作為模組打包匯出----

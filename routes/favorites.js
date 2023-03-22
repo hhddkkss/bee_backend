@@ -13,7 +13,7 @@ router.get('/:member_id', async (req, res) => {
   const { member_id } = req.params
 
   const [rows] = await db.query(
-    'SELECT * FROM `like_list` WHERE member_id= ?',
+    'SELECT  `product_total`.* ,`like_list`.* FROM `product_total` INNER JOIN like_list ON like_list.product_id = product_total.product_id WHERE like_list.member_id = ?',
     [member_id]
   )
 
