@@ -130,6 +130,61 @@ router.post('/memberPostArticle', async (req, res) => {
   res.json(output)
 })
 
+// 更新文章
+router.post('/memberEditPostArticle', async (req, res) => {
+  let output = {
+    success: true,
+    data: {},
+    error: {},
+  }
+  output.data = req.body
+  console.log(output.data)
+  let sql =
+    'UPDATE `articles` SET `article_category_id`=?,`title`=?,`content_1`=?,`content_2`=?,`member_id`=?,`created_at`=NOW(),`article_pic_main`=?,`article_pic_content`=?,`article_hashtag`=?,`article_Onpublic`=? WHERE `article_id`=?'
+  // 錯誤判斷
+  if (!output.data.memberId) {
+    output.error.member = '請先登入'
+    output.success = false
+  }
+  if (!output.data.title) {
+    output.error.title = '請輸入文章標題'
+    output.success = false
+  }
+  if (!output.data.category) {
+    output.error.category = '請為文章分類'
+    output.success = false
+  }
+  if (!output.data.content_1) {
+    output.error.content_1 = '請輸入文章內容'
+    output.success = false
+  }
+  if (!output.data.article_pic_main) {
+    output.error.article_pic_main = '請附上至少一張圖片'
+    output.success = false
+  }
+
+  if (output.success) {
+    const [result] = await dataBase.query(sql, [
+      output.data.category,
+      output.data.title,
+      output.data.content_1,
+      output.data.content_2,
+      output.data.memberId,
+      output.data.article_pic_main,
+      output.data.article_pic_content,
+      output.data.hashtags,
+      output.data.article_OnPublic,
+      output.data.article_id,
+    ])
+    output.success = !!result.affectedRows
+    // console.log(output.success)
+  } else {
+    output.error.sql = '更新至資料庫失敗'
+  }
+  console.log('output', output)
+  res.json(output)
+})
+
 // 拿取留言資料
 router.post('/articleComments', async (req, res) => {
   const sql =
@@ -241,7 +296,7 @@ router.post('/memberArticlePosted', async (req, res) => {
 //最熱門文章(收藏數及留言數)
 router.get('/hotIssue', async (req, res) => {
   const SQL =
-    'SELECT a.article_id,a.title,a.article_pic_main,M.email,M.member_pic, COUNT(b.message_id)+COUNT(c.sid) AS hotGrade FROM articles a LEFT JOIN article_message b ON a.article_id = b.article_id LEFT JOIN article_like c ON a.article_id = c.article_id LEFT JOIN member_list M ON a.member_id = M.member_id GROUP BY a.article_id  ORDER BY hotGrade DESC LIMIT 0,5'
+    'SELECT a.article_id,a.title,a.article_pic_main,M.email,M.member_pic, COUNT(b.message_id)+COUNT(c.sid) AS hotGrade FROM articles a LEFT JOIN article_message b ON a.article_id = b.article_id LEFT JOIN article_like c ON a.article_id = c.article_id LEFT JOIN member_list M ON a.member_id = M.member_id WHERE a.`article_OnPublic`=1 GROUP BY a.article_id  ORDER BY hotGrade DESC LIMIT 0,5'
   let [result] = await dataBase.query(SQL)
   result = result.map((v, i) => {
     return {
@@ -258,6 +313,13 @@ router.post('/singleArtLikes', async (req, res) => {
     'SELECT COUNT(c.sid) AS likesCount FROM articles a LEFT JOIN article_like c ON a.article_id = c.article_id WHERE a.article_id =?'
   let [result] = await dataBase.query(SQL, [req.body.article_id])
 
+  res.json(result)
+})
+
+// 刪除文章
+router.post('/deleteArticle', async (req, res) => {
+  const sql = 'DELETE FROM `articles` WHERE `article_id` = ?'
+  let [result] = await dataBase.query(sql, [req.body.article_id])
   res.json(result)
 })
 module.exports = router
