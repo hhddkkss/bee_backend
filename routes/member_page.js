@@ -194,5 +194,17 @@ router.get('/membershoppinglist/:member_id', async (req, res) => {
   res.json(await getshoppinglist(req))
 })
 
+//navbar name
+const getnavname = async (req) => {
+  const sql = `SELECT email, member_name FROM member_list WHERE member_id =? `
+  const [rows] = await dataBase.query(sql, [req.params.member_id])
+  console.log('AAA', rows)
+  return rows
+}
+
+router.get('/getnavname/:member_id', async (req, res) => {
+  res.json(await getnavname(req))
+})
+
 //記得!!!!----將路由作為模組打包匯出----
 module.exports = router
