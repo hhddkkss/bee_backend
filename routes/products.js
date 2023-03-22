@@ -17,9 +17,10 @@ const getProductsData = async (req, res) => {
     const [rows] = await db.query(sql)
     // const [[{ totalRows }]] = await db.query(sql2)
     // console.log(rows)
-
+    console.log('正常')
     return rows
   } catch (error) {
+    console.log('出錯')
     res.send(error + '出現錯誤')
   }
 }

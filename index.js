@@ -186,11 +186,12 @@ app.use('/article_page', require('./routes/article_page'))
 app.use('/products', require('./routes/products'))
 app.use('/cart', require('./routes/cart'))
 app.use('/coupon', require('./routes/coupon'))
-app.use('/like_list', require('./routes/like_list'))
+app.use('/favorites', require('./routes/favorites'))
 app.use('/signUp', require('./routes/signUp'))
 app.use('/address_list', require('./routes/address_list'))
 app.use('/product_compare', require('./routes/product_compare'))
 app.use('/product_detail', require('./routes/product_detail'))
+app.use('/order', require('./routes/order'))
 
 //靜態內容資料夾
 app.use(express.static(__dirname + '/public'))

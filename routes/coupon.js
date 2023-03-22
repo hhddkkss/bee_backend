@@ -11,6 +11,7 @@ router.use((req, res, next) => {
 //優惠券 /coupon/:code
 router.get('/:code', async (req, res) => {
   const code = req.params.code
+  console.log(code)
 
   const sql = 'SELECT * FROM `coupon` WHERE `code` = ?'
 

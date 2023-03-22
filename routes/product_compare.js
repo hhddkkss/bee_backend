@@ -33,16 +33,20 @@ router.post('/compareIng', async (req, res) => {
   let sql = ''
   switch (key) {
     case 1:
-      sql = 'SELECT * FROM `product_cell_phone` WHERE  `product_id` = ?'
+      sql =
+        'SELECT A.*,T.product_pic FROM `product_cell_phone` A LEFT JOIN product_total T ON A.product_id = T.product_id WHERE  A.`product_id` = ?'
       break
     case 2:
-      sql = 'SELECT * FROM `product_tablet_computer` WHERE  `product_id` = ?'
+      sql =
+        'SELECT A.*,T.product_pic FROM `product_tablet_computer` A LEFT JOIN product_total T ON A.product_id = T.product_id WHERE  A.`product_id` = ?'
       break
     case 3:
-      sql = 'SELECT * FROM `product_headphones` WHERE  `product_id` = ?'
+      sql =
+        'SELECT A.*,T.product_pic FROM `product_headphones` A LEFT JOIN product_total T ON A.product_id = T.product_id WHERE  A.`product_id` = ?'
       break
     default:
-      sql = 'SELECT * FROM `product_cell_phone` WHERE  `product_id` = ?'
+      sql =
+        'SELECT A.*,T.product_pic FROM `product_cell_phone` A LEFT JOIN product_total T ON A.product_id = T.product_id WHERE  A.`product_id` = ?'
   }
   let rows = []
   for (let i = 0; i <= compareProductIds.length; i++) {

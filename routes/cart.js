@@ -8,6 +8,15 @@ router.use((req, res, next) => {
   next()
 })
 
+router.delete('/empty', async (req, res) => {
+  const { member_id } = req.body
+
+  const sql = 'DELETE FROM `cart_item` WHERE `member_id` =?'
+
+  const [rows] = await db.query(sql, [member_id])
+  res.send(rows)
+})
+
 //獲取某個會員的購物車
 //- 網址 /cart/4
 router.get('/api/:member_id', async (req, res) => {
@@ -40,6 +49,30 @@ router.get('/api/:member_id', async (req, res) => {
 
 //新增商品進購物車
 
+router.post('/addItem', async (req, res) => {
+  const { member_id, product_id } = req.body
+
+  //判斷有沒有值進來 有的話找資料庫 有沒有member＿id的商品
+
+  let [rows] = await db.query(
+    'SELECT C.product_id FROM `cart_item` C WHERE member_id = ?  AND `product_id` = ? ',
+    [member_id, product_id]
+  )
+  console.log([member_id, product_id])
+  console.log(rows)
+
+  if (rows.length === 0) {
+    const [results] = await db.query(
+      'INSERT INTO `cart_item` (member_id, product_id, quantity,modify_at) VALUES (?, ?, 1,NOW())',
+      [member_id, product_id]
+    )
+    // console.log(9999)
+    res.json(results)
+  } else {
+    res.send('新增失敗')
+  }
+})
+
 router.post('/', async (req, res) => {
   const { member_id, product_id } = req.body
   console.log('A1', member_id, 'A2', product_id)
@@ -55,35 +88,33 @@ router.post('/', async (req, res) => {
   })
   console.log(rows, 'result2')
 
-  // console.log('A3', product_id[0])
-  console.log('A4', !rows.includes(1))
+  // console.log('A3', typeof product_id[0])
+  console.log('A4', !rows.includes('1'))
 
-  // ! FIXED
-
-  const waitToAdd = product_id.map((v) => {
+  let waitToAdd = product_id.map((v) => {
     if (!rows.includes(v)) {
-      console.log('A3', v)
+      console.log('A3', typeof v)
       return v
     } else {
-      console.log('A5', v)
+      // console.log('A5', v)
       return
     }
   })
   console.log(waitToAdd, 'waitToAdd')
-  // ! FIXED
 
   for (let i = 0; i < waitToAdd.length; i++) {
-    try {
+    if (waitToAdd[i]) {
       const [results] = await db.query(
         'INSERT INTO `cart_item` (member_id, product_id, quantity,modify_at) VALUES (?, ?, 1,NOW())',
         [member_id, waitToAdd[i]]
       )
-
+      console.log(1)
       res.json(results)
-    } catch (e) {
-      console.log('新增購物車錯誤')
     }
+    console.log('新增購物車錯誤')
   }
+
+  // console.log('新增購物車錯誤')
 })
 
 //- 網址 post  /cart
@@ -139,6 +170,7 @@ router.put('/minus/:sid', async (req, res) => {
   const quantity = parseInt(req.body.quantity) - 1
   const sid = req.params.sid
 
+  //數量不為0 正常-1
   try {
     const results = await db.query(
       'UPDATE `cart_item` SET quantity = ? WHERE sid = ?',
