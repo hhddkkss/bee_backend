@@ -33,7 +33,7 @@ router.get('/home_product', async (req, res) => {
 // //首頁拉文章
 
 const getarticles = async (req) => {
-  const sql = `SELECT title, content_1, article_pic_main FROM articles LIMIT 0,3 `
+  const sql = `SELECT article_id, title, content_1, article_pic_main FROM articles LIMIT 0,3 `
   const [rows] = await dataBase.query(sql, [req.params.id])
   return rows
 }
