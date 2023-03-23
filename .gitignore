@@ -20,5 +20,6 @@ production.env
 .DS_Store
 #要設 expressjs service和 db config
 
-
+# googleAuth金鑰
+client_secret.json
 
