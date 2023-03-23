@@ -94,7 +94,7 @@ router.post('/order_all', async (req, res) => {
     99999
   )
   const sql =
-    'INSERT  INTO `order_all`( `order_id`,`order_day`, `member_id`, `order_state`, `order_money`, `order_memo`, `order_ship_money`, `coupon_id`, `order_recipient`, `order_phone`, `order_address_city`, `order_address_dist`, `order_address`, `order_email`, `postalCode`,`order_logistics_id`) VALUES (?,NOW(),?,?,?,?,120,?,?,?,?,?,?,?,?,2)'
+    'INSERT  INTO `order_all`( `order_id`,`order_day`, `member_id`, `order_state`, `order_money`, `order_memo`, `order_ship_money`, `coupon_id`, `order_recipient`, `order_phone`, `order_address_city`, `order_address_dist`, `order_address`, `order_email`, `postalCode`,`order_logistics_id`,`receive_done`) VALUES (?,NOW(),?,?,?,?,120,?,?,?,?,?,?,?,?,2,0)'
 
   orderAllOutput = {
     orderNum: 'bee' + dayjs(time).format('YYYYMMDDhhmmss'),
