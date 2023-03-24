@@ -74,28 +74,6 @@ app.use(express.json())
 
 //路由Routers
 
-//上傳圖片
-// app.post('/try-upload', upload.single('avatar'), async (req, res) => {
-//   console.log('req.file:', req.file)
-//   res.json(req.file)
-// })
-
-// app.post('/users/avatar', auth, upload.single('avatar'), async (req, res) => {
-//   // 將二進位的照片資料存在該用戶的 avatar 欄位中
-//   req.user.avatar = req.file.buffer
-//   // 請 Mongoose 將用戶資料存至 MongoDB 中
-//   await req.user.save()
-//   res.status(200).send()
-// })
-/*
-  if(req.file && req.file.originalname){
-      await fs.rename(req.file.path, `public/imgs/${req.file.originalname}`);
-      res.json(req.file);
-  } else {
-      res.json({msg:'沒有上傳檔案'});
-  }
-  */
-
 app.post('/try-upload2', upload.array('photos'), async (req, res) => {
   res.json(req.files)
 })
@@ -199,6 +177,7 @@ app.use('/product_compare', require('./routes/product_compare'))
 app.use('/product_detail', require('./routes/product_detail'))
 app.use('/order', require('./routes/order'))
 app.use('/googleAuth', require('./routes/googleLgin'))
+app.use('/memberComment', require('./routes/member_comment'))
 
 //靜態內容資料夾
 app.use(express.static(__dirname + '/public'))

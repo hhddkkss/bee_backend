@@ -16,8 +16,8 @@ const getMemberData = async (req) => {
   const sql = `SELECT * FROM member_list WHERE member_id = ?`
   console.log(req.params.member_list)
   // const [rows] = await dataBase.query(sql, [req.params.member_list]);
-  const re = await dataBase.query(sql, [req.params.member_list])
-  return { re }
+  const [[re]] = await dataBase.query(sql, [req.params.member_list])
+  return re
 }
 
 router.get('/member_api/:member_list', async (req, res) => {
@@ -174,16 +174,45 @@ router.post(
   }
 )
 
+//訂單
+// const getshoppinglist = async (req) => {
+//   const sql =
+//     'SELECT * FROM order_all o LEFT JOIN `order_status` os ON os.order_status_id = o.order_state  WHERE member_id =? '
+//   const [rows] = await dataBase.query(sql, [req.params.id])
+//   console.log(rows)
+//   return rows
+// }
+
+router.get('/membershoppinglist/:member_id', async (req, res) => {
+  const sql =
+    'SELECT * FROM order_all o LEFT JOIN `order_status` os ON os.order_status_id = o.order_state JOIN `order_logistics` ol ON ol.`order_logistics_id` = o.`order_logistics_id` WHERE member_id =? ORDER BY o.`order_id` DESC'
+  const [rows] = await dataBase.query(sql, [req.params.member_id])
+  console.log(rows, 7777)
+  res.json(rows)
+})
+
+router.get('/shoppinglistdetail/:member_id/:order_id', async (req, res) => {
+  const { member_id, order_id } = req.params
+  console.log(member_id, order_id)
+
+  const sql =
+    'SELECT * FROM order_all o LEFT JOIN `order_status` os ON os.order_status_id = o.order_state left JOIN order_detail od ON o.`order_id` = od.order_id left JOIN `order_logistics` ol ON ol.order_logistics_id = o.order_logistics_id left JOIN `coupon` c ON c.id = o.coupon_id JOIN product_total p ON od.product_id= p.product_id WHERE o.member_id =? AND o.order_id =?;'
+
+  const [rows] = await dataBase.query(sql, [member_id, order_id])
+  console.log(rows, 9999)
+  res.json(rows)
+})
 //移除用戶本來的頭貼回預設值
-router.get('/member_photo_delete/:member_id', async (req, res) => {
+router.get('/member_photo_delete/:mid', async (req, res) => {
   const sql = `UPDATE member_list SET member_pic = ? WHERE member_id = ?`
   const [result] = await dataBase.query(sql, [
     `http://localhost:3003/uploads/member_default_avatar.png`,
-    req.params.member_id,
+    req.params.mid,
   ])
   console.log('res:', result)
   res.json(result)
 })
+
 //讀取圖片
 const readpic = async (req) => {
   const sql = `SELECT member_pic FROM member_list WHERE member_id =? `

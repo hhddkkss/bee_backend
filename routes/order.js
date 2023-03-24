@@ -29,6 +29,7 @@ router.post('/order_all', async (req, res) => {
     quantity,
     product_price,
     discount,
+    payment_method,
   } = req.body
 
   const fee = 120
@@ -55,22 +56,22 @@ router.post('/order_all', async (req, res) => {
     }
   }
 
+  //判斷已付款未付款
+  const confirmPaid = (payment_method) => {
+    if (payment_method == 1) {
+      return 2
+    }
+    if (payment_method == 2) {
+      return 3
+    }
+    if (payment_method == 3) {
+      return 2
+    }
+  }
+  const order_state = confirmPaid(payment_method)
   //組成姓名
   let order_money = getFinalPrice(getTotalPrice(product_price, quantity))
   let order_recipient = lastName + firstName
-
-  const sql =
-    'INSERT  INTO `order_all`( `order_id`,`order_day`, `member_id`, `order_state`, `order_money`, `order_memo`, `order_ship_money`, `coupon_id`, `order_recipient`, `order_phone`, `order_address_city`, `order_address_dist`, `order_address`, `order_email`, `postalCode`) VALUES (?,NOW(),?,2,?,?,120,?,?,?,?,?,?,?,?)'
-
-  orderAllOutput = {
-    orderNum: 'bee' + dayjs(time).format('YYYYMMDDhhmmss'),
-    order_recipient: order_recipient,
-    order_email: order_email,
-    orderDate: dayjs(time).format('YYYY / MM / DD'),
-    totalPrice: getTotalPrice(product_price, quantity),
-    finalPrice: getFinalPrice(getTotalPrice(product_price, quantity)) + fee,
-    discount: discount,
-  }
   console.log(
     {
       member_id,
@@ -86,15 +87,29 @@ router.post('/order_all', async (req, res) => {
       postalCode,
       quantity,
       product_price,
-      discount,
       orderId: orderAllOutput.orderNum,
+      payment_method,
+      order_state,
     },
     99999
   )
+  const sql =
+    'INSERT  INTO `order_all`( `order_id`,`order_day`, `member_id`, `order_state`, `order_money`, `order_memo`, `order_ship_money`, `coupon_id`, `order_recipient`, `order_phone`, `order_address_city`, `order_address_dist`, `order_address`, `order_email`, `postalCode`,`order_logistics_id`,`receive_done`) VALUES (?,NOW(),?,?,?,?,120,?,?,?,?,?,?,?,?,2,0)'
+
+  orderAllOutput = {
+    orderNum: 'bee' + dayjs(time).format('YYYYMMDDhhmmss'),
+    order_recipient: order_recipient,
+    order_email: order_email,
+    orderDate: dayjs(time).format('YYYY / MM / DD'),
+    totalPrice: getTotalPrice(product_price, quantity),
+    finalPrice: getFinalPrice(getTotalPrice(product_price, quantity)) + fee,
+    discount: discount,
+  }
 
   let [rows] = await db.query(sql, [
     orderAllOutput.orderNum,
     member_id,
+    order_state,
     order_money + fee,
     order_memo,
     coupon_id ? coupon_id : null,
@@ -141,7 +156,7 @@ router.post('/order_detail', async (req, res) => {
       product_id: product_id[i],
       product_name: product_name[i],
       product_amount: product_amount[i],
-      product_price: product_price[i],
+      product_price: product_price[i] - 1000,
       product_pic: product_pic[i],
     }
 
