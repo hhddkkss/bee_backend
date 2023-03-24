@@ -38,7 +38,6 @@ const sessionStore = new MysqlStore({}, dataBase)
 const bcrypt = require('bcryptjs')
 //Token
 const jwt = require('jsonwebtoken')
-const auth = require('auth')
 
 // app.listen(3007, () => {
 //   console.log("OPEN");
