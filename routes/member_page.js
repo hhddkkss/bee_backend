@@ -1,11 +1,11 @@
 const express = require('express')
 const dataBase = require('./../modules/db_connect')
-const jwt = require('jsonwebtoken')
+// const jwt = require('jsonwebtoken')
 const router = express.Router()
 // const MemberModifyMethod = require('../controllers/modify_controller')
 const bcrypt = require('bcrypt')
 const multer = require('multer')
-const upload = multer({ dest: '../public/uploads' })
+const uploads = require('./../modules/upload-img')
 //登入後才能檢視要塞這
 
 router.use((req, res, next) => {
@@ -41,25 +41,25 @@ const MatchMemberPassword = async (req) => {
   //將會員id宣告成變數
 
   let memberId = req.body.memberId
-  console.log('aaaa:', memberId)
+  // console.log('aaaa:', memberId)
   const passsql = `SELECT password FROM member_list WHERE member_id = ?`
   const [rows] = await dataBase.query(passsql, [memberId])
-  console.log('bbb:', rows)
+  // console.log('bbb:', rows)
   const realOldPass = rows[0].password
   const newPass = req.body.newPass
   const oldPass = req.body.oldPass
-  console.log('ccc:', newPass)
+  // console.log('ccc:', newPass)
 
   //如果舊密碼一致,就更改密碼
   const isMatch = bcrypt.compare(oldPass, realOldPass)
-  console.log('compareSync:', bcrypt.compareSync(oldPass, realOldPass))
+  // console.log('compareSync:', bcrypt.compareSync(oldPass, realOldPass))
   //if(真的舊密碼解密後 跟 輸入後舊密碼 一樣)
   if (!isMatch) {
     // 比對出錯，處理錯誤
-    console.log('error')
+    // console.log('error')
   }
   if (isMatch) {
-    console.log('yes')
+    // console.log('yes')
     // 密碼正確，更改密碼
 
     //     //先把新密碼加密
@@ -109,18 +109,6 @@ router.put('/password/:member_id', async (req, res) => {
 //   res.send("<h1>123</h1>");
 // });
 
-// 修改會員資料
-// memberModifyMethod = new MemberModifyMethod();
-
-// // 會員登入
-// router.post('/member/login', memberModifyMethod.postLogin);
-
-// 更新會員資料
-// router.put('/member', memberModifyMethod.putUpdate);
-
-// 更新會員資料（檔案上傳示範，可直接取代/member的PUT method）
-// router.put('/updateimage', memberModifyMethod.putUpdateImage);
-
 // modules.exports = router;
 
 router.get('/edit/:member_id', async (req, res) => {
@@ -161,24 +149,27 @@ router.put('/edit/:member_id', async (req, res) => {
   if (result.affectedRows) output.success = true
   output.result = result
   res.json(output)
-  console.log('AAA', output)
+  // console.log('AAA', output)
 })
 
 // router.get("/item/:member_id", async (req, res) => {
 //   // 讀取單筆資料
 // });
 
-//上傳圖片還沒有資料庫
+//上傳圖片
 router.post(
   '/member_photo/:member_id',
-  upload.single({ name: 'avatar', maxCount: 1 }),
+  uploads.single('avatar'),
   async (req, res) => {
+    // console.log('name', req.file.filename)
+    const fileName = req.file.filename
+    console.log(fileName)
     const sql = `UPDATE member_list SET member_pic = ? WHERE member_id = ?`
     const [result] = await dataBase.query(sql, [
-      req.params.member_pic,
+      `http://localhost:3003/uploads/${fileName}`,
       req.params.member_id,
     ])
-
+    console.log('res:', result)
     res.json(result)
   }
 )
@@ -211,6 +202,99 @@ router.get('/shoppinglistdetail/:member_id/:order_id', async (req, res) => {
   console.log(rows, 9999)
   res.json(rows)
 })
+//移除用戶本來的頭貼回預設值
+router.get('/member_photo_delete/:mid', async (req, res) => {
+  const sql = `UPDATE member_list SET member_pic = ? WHERE member_id = ?`
+  const [result] = await dataBase.query(sql, [
+    `http://localhost:3003/uploads/member_default_avatar.png`,
+    req.params.mid,
+  ])
+  console.log('res:', result)
+  res.json(result)
+})
+
+//讀取圖片
+const readpic = async (req) => {
+  const sql = `SELECT member_pic FROM member_list WHERE member_id =? `
+  const [rows] = await dataBase.query(sql, [req.params.member_id])
+  // console.log('AAA', rows)
+  return rows
+}
+
+router.get('/member_readphoto/:member_id', async (req, res) => {
+  res.json(await readpic(req))
+})
+
+//回復初始圖片
+// const updatepic = async (req) => {
+//   const sql = `UPDATE member_list SET member_pic = ? WHERE member_id = ? `
+//   const [rows] = await dataBase.query(sql, [req.params.member_id])
+//   // console.log('AAA', rows)
+//   return rows
+// }
+// router.post('/member_readphoto/:member_id', async (req, res) => {
+//   res.json(await updatepic(req))
+// })
+
+//訂單
+// const getshoppinglist = async (req) => {
+//   const sql = `SELECT * FROM order_all WHERE member_id =? `
+//   const [rows] = await dataBase.query(sql, [req.params.id])
+//   return rows
+// }
+
+// router.get('/membershoppinglist/:member_id', async (req, res) => {
+//   res.json(await getshoppinglist(req))
+// })
+
+//navbar name
+const getnavname = async (req) => {
+  const sql = `SELECT email, member_name,member_pic FROM member_list WHERE member_id =? `
+  const [rows] = await dataBase.query(sql, [req.params.member_id])
+  // console.log('AAA', rows)
+  return rows
+}
+
+router.get('/getnavname/:member_id', async (req, res) => {
+  res.json(await getnavname(req))
+})
+
+//優惠卷
+// const getcoupon = async (req) => {
+//   const sql = `SELECT coupon_name, code, discount, end_time, id FROM coupon LIMIT 0,3; `
+//   // SELECT article_id, title, content_1, article_pic_main FROM articles LIMIT 0,3
+//   // SELECT coupon_name, code, discount, end_time, id FROM coupon WHERE id = ?
+//   const [rows] = await dataBase.query(sql, [req.params.id])
+//   // console.log('AAA', rows)
+//   return rows
+// }
+
+router.get('/getcoupon/:id', async (req, res) => {
+  const sql = `SELECT member_coupon_list FROM member_list WHERE member_id = ?`
+  let [couponIds] = await dataBase.query(sql, [req.params.id])
+  couponIds = couponIds[0].member_coupon_list
+  couponIds = couponIds.split(',') //現在是個陣列
+  let rows = []
+  for (let i = 0; i < couponIds.length; i++) {
+    const couponSql = `SELECT coupon_name, code, discount, end_time, id FROM coupon WHERE id = ?`
+    let [newRows] = await dataBase.query(couponSql, [couponIds[i]])
+    console.log('newRows', newRows)
+    rows = [...rows, ...newRows]
+  }
+  console.log(rows)
+  res.json(rows)
+})
+
+// const getcouponmember = async (req) => {
+//   const sql = `SELECT member_coupon_list FROM member_list WHERE member_id = ?`
+//   const [rows] = await dataBase.query(sql, [req.params.member_id])
+//   // console.log('AAA', rows)
+//   return rows
+// }
+
+// router.get('/getmembercoupon/:member_id', async (req, res) => {
+//   res.json(await getcouponmember(req))
+// })
 
 //記得!!!!----將路由作為模組打包匯出----
 module.exports = router

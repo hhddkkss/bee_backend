@@ -55,10 +55,6 @@ var corsOptions = {
   },
 }
 app.use(cors(corsOptions))
-//上傳圖片
-// app.post("/try-upload2", upload.array("photos"), async (req, res) => {
-//   res.json(req.files);
-// });
 
 //session設定
 app.use(
@@ -77,18 +73,6 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
 //路由Routers
-
-app.post('/try-upload', upload.single('avatar'), async (req, res) => {
-  res.json(req.file)
-  /*
-  if(req.file && req.file.originalname){
-      await fs.rename(req.file.path, `public/imgs/${req.file.originalname}`);
-      res.json(req.file);
-  } else {
-      res.json({msg:'沒有上傳檔案'});
-  }
-  */
-})
 
 app.post('/try-upload2', upload.array('photos'), async (req, res) => {
   res.json(req.files)
