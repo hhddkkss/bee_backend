@@ -201,17 +201,18 @@ router.get('/shoppinglistdetail/:member_id/:order_id', async (req, res) => {
   const [rows] = await dataBase.query(sql, [member_id, order_id])
   console.log(rows, 9999)
   res.json(rows)
-  //移除用戶本來的頭貼回預設值
-  router.get('/member_photo_delete/:member_id', async (req, res) => {
-    const sql = `UPDATE member_list SET member_pic = ? WHERE member_id = ?`
-    const [result] = await dataBase.query(sql, [
-      `http://localhost:3003/uploads/member_default_avatar.png`,
-      req.params.member_id,
-    ])
-    console.log('res:', result)
-    res.json(result)
-  })
 })
+//移除用戶本來的頭貼回預設值
+router.get('/member_photo_delete/:mid', async (req, res) => {
+  const sql = `UPDATE member_list SET member_pic = ? WHERE member_id = ?`
+  const [result] = await dataBase.query(sql, [
+    `http://localhost:3003/uploads/member_default_avatar.png`,
+    req.params.mid,
+  ])
+  console.log('res:', result)
+  res.json(result)
+})
+
 //讀取圖片
 const readpic = async (req) => {
   const sql = `SELECT member_pic FROM member_list WHERE member_id =? `
