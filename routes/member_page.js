@@ -7,6 +7,8 @@ const bcrypt = require('bcrypt')
 // const multer = require('multer')
 const uploads = require('./../modules/upload-img')
 //登入後才能檢視要塞這
+const dayjs = require('dayjs')
+const { format } = require('mysql2')
 
 router.use((req, res, next) => {
   next()
@@ -113,8 +115,10 @@ router.put('/password/:member_id', async (req, res) => {
 
 router.get('/edit/:member_id', async (req, res) => {
   const sql = ` SELECT * FROM member_list WHERE member_id=?`
-  const [rows] = await dataBase.query(sql, [req.params.member_id])
+  let [rows] = await dataBase.query(sql, [req.params.member_id])
 
+  rows[0].birthday = dayjs(rows[0].birthday).format('YYYY-MM-DD')
+  console.log('data', rows[0].birthday)
   res.json(rows)
 })
 // if (!rows || !rows.length) {
@@ -149,7 +153,7 @@ router.put('/edit/:member_id', async (req, res) => {
   if (result.affectedRows) output.success = true
   output.result = result
   res.json(output)
-  // console.log('AAA', output)
+  console.log('AAA', output.postData)
 })
 
 // router.get("/item/:member_id", async (req, res) => {
