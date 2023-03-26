@@ -4,7 +4,7 @@ const dataBase = require('./../modules/db_connect')
 const router = express.Router()
 // const MemberModifyMethod = require('../controllers/modify_controller')
 const bcrypt = require('bcrypt')
-const multer = require('multer')
+// const multer = require('multer')
 const uploads = require('./../modules/upload-img')
 //登入後才能檢視要塞這
 
