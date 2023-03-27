@@ -178,6 +178,7 @@ app.use('/product_detail', require('./routes/product_detail'))
 app.use('/order', require('./routes/order'))
 app.use('/googleAuth', require('./routes/googleLgin'))
 app.use('/memberComment', require('./routes/member_comment'))
+app.use('/event_coupon', require('./routes/event'))
 
 //靜態內容資料夾
 app.use(express.static(__dirname + '/public'))
