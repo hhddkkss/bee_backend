@@ -64,7 +64,7 @@ router.post('/', async (req, res) => {
   }
 
   const sql =
-    'INSERT INTO `member_list`(`member_name`,`email`,`password`,`mobile`,`gender`,`birthday`,`address_city`,`address_dist`,`address_rd`,`last_edit_date`,`member_level_id`,`member_pic`) VALUES (?,?,?,?,?,?,?,?,?,NOW(),3,?)'
+    'INSERT INTO `member_list`(`member_name`,`email`,`password`,`mobile`,`gender`,`birthday`,`address_city`,`address_dist`,`address_rd`,`last_edit_date`,`member_level_id`,`member_pic`,`member_coupon_list`) VALUES (?,?,?,?,?,?,?,?,?,NOW(),3,?,7)'
 
   if (output.success) {
     const [result] = await dataBase.query(sql, [
