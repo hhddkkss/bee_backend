@@ -58,6 +58,7 @@ router.post('/googleBack', async function (req, res, next) {
   myData = {
     email: myData.emailAddresses[0].value,
     name: myData.names[0].displayName,
+    pic: myData.photos[0].url,
     token: r.tokens.id_token,
   }
   res.json(myData)

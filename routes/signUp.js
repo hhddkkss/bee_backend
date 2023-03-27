@@ -45,6 +45,9 @@ router.post('/', async (req, res) => {
     address_city: req.body.address_city,
     address_dist: req.body.address_dist,
     address_rd: req.body.address_rd,
+    memberPic:
+      req.body.memberPic ||
+      'http://localhost:3003/uploads/member_default_avatar.png',
   }
   //檢查各欄位資料
   if (output.data.name.length < 1) {
@@ -74,8 +77,9 @@ router.post('/', async (req, res) => {
       output.data.address_city,
       output.data.address_dist,
       output.data.address_rd,
-      'member_default_avatar.png',
+      output.data.memberPic,
     ])
+    console.log(output.data.memberPic)
     output.affectedRows = result.affectedRows
     output.data.sid = result.insertId
     // 包成token
