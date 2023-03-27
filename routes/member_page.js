@@ -277,14 +277,18 @@ router.get('/getcoupon/:id', async (req, res) => {
   const sql = `SELECT member_coupon_list FROM member_list WHERE member_id = ?`
   let [couponIds] = await dataBase.query(sql, [req.params.id])
   couponIds = couponIds[0].member_coupon_list
-  couponIds = couponIds.split(',') //現在是個陣列
+  console.log('couponIds', couponIds)
   let rows = []
-  for (let i = 0; i < couponIds.length; i++) {
-    const couponSql = `SELECT coupon_name, code, discount, end_time, id FROM coupon WHERE id = ?`
-    let [newRows] = await dataBase.query(couponSql, [couponIds[i]])
-    console.log('newRows', newRows)
-    rows = [...rows, ...newRows]
+  if (couponIds) {
+    couponIds = couponIds.split(',') //現在是個陣列
+    for (let i = 0; i < couponIds.length; i++) {
+      const couponSql = `SELECT coupon_name, code, discount, end_time, id FROM coupon WHERE id = ?`
+      let [newRows] = await dataBase.query(couponSql, [couponIds[i]])
+      console.log('newRows', newRows)
+      rows = [...rows, ...newRows]
+    }
   }
+
   console.log(rows)
   res.json(rows)
 })
