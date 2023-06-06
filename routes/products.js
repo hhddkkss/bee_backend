@@ -21,7 +21,7 @@ const getProductsData = async (req, res) => {
     return rows
   } catch (error) {
     console.log('出錯')
-    res.send(error + '出現錯誤')
+    return error + '出現錯誤'
   }
 }
 
