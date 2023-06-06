@@ -5,11 +5,14 @@ const { OAuth2Client } = require('google-auth-library')
 
 // Step 1 :載入 GCP OAuth 2.0 用戶端 ID 憑證
 
-const keys = require(__dirname + '/../client_secret.json')
+// const keys = require(__dirname + '/../client_secret.json')
 const oAuth2c = new OAuth2Client(
-  keys.web.client_id,
-  keys.web.client_secret,
-  keys.web.redirect_uris[0]
+  // keys.web.client_id,
+  // keys.web.client_secret,
+  // keys.web.redirect_uris[0]
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  process.env.REDIRECT_URIS
 )
 
 // Step 2 :創建處理 Google 登錄的路由
