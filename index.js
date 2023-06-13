@@ -45,16 +45,18 @@ const jwt = require('jsonwebtoken')
 const upload = require(__dirname + '/modules/upload-img')
 //2.建立 web server 物件
 const app = express()
+app.use(cors())
 //EJS
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
+
 //設定白名單
-var corsOptions = {
-  origin: function (origin, callback) {
-    callback(null, true)
-  },
-}
-app.use(cors(corsOptions))
+// var corsOptions = {
+//   origin: function (origin, callback) {
+//     callback(null, true)
+//   },
+// }
+// app.use(cors(corsOptions))
 
 //session設定
 app.use(
@@ -91,7 +93,7 @@ app.use('/member_page', require('./routes/member_page'))
 app.use('/home_page', require('./routes/home_page'))
 // app.use("/article_page", require("./routes/article_page"));
 
-app.use(cors())
+// app.use(cors())
 
 //路由Routers
 

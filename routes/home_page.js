@@ -31,7 +31,7 @@ router.get('/home_product', async (req, res) => {
 })
 
 const recommendProduct = async (req) => {
-  const sql = `SELECT product_id,product_name, product_price, product_pic FROM product_total LIMIT 289,3 `
+  const sql = `SELECT product_id,product_name, product_price, product_pic FROM product_total LIMIT 289,6 `
 
   // const [rows] = await dataBase.query(sql, [
   //   req.body.product_name,
