@@ -10,7 +10,7 @@ node_modules
 # modules/db_connect.js
 
 public/img
-
+*.env
 package-lock.json
 tmp_uploads
 
@@ -23,4 +23,4 @@ production.env
 # googleAuth金鑰
 client_secret.json
 
-*.env
+
