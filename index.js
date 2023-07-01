@@ -8,6 +8,12 @@ if (process.argv[2] && process.argv[2] == 'em') {
     path: './em.env',
   })
 }
+if (process.argv[2] && process.argv[2] == 'peter') {
+  require('dotenv').config({
+    path: './peter.env',
+  })
+}
+
 //aaron test  database 測試資料庫用 正式寫會刪除
 if (process.argv[2] && process.argv[2] == 'aaron') {
   require('dotenv').config({
@@ -130,7 +136,7 @@ app.post('/login', async (req, res) => {
   const [rows] = await dataBase.query(sql, [req.body.email])
   //帳號錯誤判斷
   if (!rows.length) {
-    output.error = 'Oh!帳號密碼錯誤!'
+    output.error = 'Oh!帳號或密碼錯誤!'
     return res.json(output)
   }
 
@@ -162,7 +168,7 @@ app.post('/login', async (req, res) => {
     output.memberName = rows[0].member_name
     res.json(output)
   } else {
-    output.error = '402帳號密碼錯誤'
+    output.error = '帳號或密碼錯誤!! 請檢查後再重新輸入'
     return res.json(output)
   }
 })
@@ -194,6 +200,7 @@ app.use((req, res) => {
 })
 
 //Server 偵聽
+console.log(process.env.PORT)
 const port = process.env.PORT || 3000
 
 app.listen(port, function () {

@@ -17,6 +17,16 @@ router.delete('/empty', async (req, res) => {
   res.send(rows)
 })
 
+router.delete('/empty_cart/:member_id', async (req, res) => {
+  const { member_id } = req.params
+  console.log(member_id, 'empty memberID')
+
+  const sql = 'DELETE FROM `cart_item` WHERE `member_id` =?'
+
+  const [rows] = await db.query(sql, [member_id])
+  res.send(rows)
+})
+
 //獲取某個會員的購物車
 //- 網址 /cart/4
 router.get('/api/:member_id', async (req, res) => {
@@ -69,7 +79,8 @@ router.post('/addItem', async (req, res) => {
     // console.log(9999)
     res.json(results)
   } else {
-    res.send('新增失敗')
+    console.log('商品重複，新增失敗')
+    res.send('商品重複，新增失敗')
   }
 })
 
@@ -165,10 +176,54 @@ router.put('/plus/:sid', async (req, res) => {
     console.log('修改失敗')
   }
 })
+
+router.put('/plus_quantity', async (req, res) => {
+  const member_id = req.body.member_id
+  if (!member_id) {
+    console.log(`沒有登入 新增失敗 ${member_id}`)
+    return
+  }
+  const quantity = parseInt(req.body.quantity) + 1
+  const sid = req.body.sid
+
+  try {
+    const results = await db.query(
+      'UPDATE `cart_item` SET quantity = ? WHERE sid = ?',
+      [quantity, sid]
+    )
+
+    res.json(results)
+  } catch (error) {
+    console.log('修改失敗')
+  }
+})
+
 //減少商品數量 /cart/1
 router.put('/minus/:sid', async (req, res) => {
   const quantity = parseInt(req.body.quantity) - 1
   const sid = req.params.sid
+
+  //數量不為0 正常-1
+  try {
+    const results = await db.query(
+      'UPDATE `cart_item` SET quantity = ? WHERE sid = ?',
+      [quantity, sid]
+    )
+
+    res.json(results)
+  } catch (error) {
+    console.log('修改失敗')
+  }
+})
+
+router.put('/minus_quantity', async (req, res) => {
+  const member_id = req.body.member_id
+  if (!member_id) {
+    console.log('沒有登入 減少失敗')
+    return
+  }
+  const quantity = parseInt(req.body.quantity) - 1
+  const sid = req.body.sid
 
   //數量不為0 正常-1
   try {
@@ -190,6 +245,32 @@ router.delete('/delete/:sid', async (req, res) => {
   if (sid == 0) {
     res.send('刪除失敗')
   }
+  try {
+    const results = await db.query('DELETE FROM `cart_item` WHERE `sid` = ? ', [
+      sid,
+    ])
+
+    res.json(results)
+  } catch (error) {
+    console.log('刪除失敗')
+  }
+})
+
+router.delete('/delete_item/:member_id/:sid', async (req, res) => {
+  const member_id = req.params.member_id
+
+  if (!member_id) {
+    console.log('刪除失敗 沒有會員編號')
+    return
+  }
+
+  const sid = req.params.sid
+
+  if (!sid) {
+    console.log('刪除失敗 沒有編號')
+    return
+  }
+
   try {
     const results = await db.query('DELETE FROM `cart_item` WHERE `sid` = ? ', [
       sid,

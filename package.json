@@ -6,6 +6,7 @@
   "scripts": {
     "em": "nodemon index.js em",
     "aaron": "nodemon index.js aaron",
+    "peter": "nodemon index.js peter",
     "dev": "nodemon index.js dev",
     "start": "node index.js aaron",
     "test": "echo \"Error: no test specified\" && exit 1"
