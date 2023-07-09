@@ -128,6 +128,7 @@ app.post('/login', async (req, res) => {
 
   const sql = 'SELECT * FROM `member_list` WHERE `email` = ?'
   const [rows] = await dataBase.query(sql, [req.body.email])
+
   //帳號錯誤判斷
   if (!rows.length) {
     output.error = 'Oh!帳號密碼錯誤!'
@@ -162,7 +163,7 @@ app.post('/login', async (req, res) => {
     output.memberName = rows[0].member_name
     res.json(output)
   } else {
-    output.error = '402帳號密碼錯誤'
+    output.error = '帳號或密碼錯誤'
     return res.json(output)
   }
 })

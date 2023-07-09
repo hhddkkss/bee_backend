@@ -22,7 +22,7 @@ router.get('/:code', async (req, res) => {
       res.json(rows[0])
     }
   } catch (error) {
-    res.send('沒有此優惠券 請重新輸入')
+    res.send('error')
   }
 })
 
