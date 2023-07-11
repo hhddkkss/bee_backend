@@ -92,7 +92,7 @@ app.get('/try_db', async (req, res) => {
 app.use('/member_page', require('./routes/member_page'))
 app.use('/home_page', require('./routes/home_page'))
 // app.use("/article_page", require("./routes/article_page"));
-
+app.use('/change_password', require('./routes/change_password'))
 // app.use(cors())
 
 //路由Routers
